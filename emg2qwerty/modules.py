@@ -453,3 +453,69 @@ class MultiBandRotationInvariantTCN(nn.Module):
             tcn(_input) for tcn, _input in zip(self.band_tcns, inputs_per_band)
         ]
         return torch.stack(band_outputs, dim=self.stack_dim)
+
+
+class MultiBandLSTMGRU(nn.Module):
+    """A `torch.nn.Module` that applies a single layer of LSTM and GRU
+    over the input tensor.
+
+    Args:
+        in_features (int): Number of input features to the LSTM and GRU.
+        lstm_layers (int): Number of LSTM layers.
+        lstm_hidden_size (int): Number of features in the LSTM hidden state.
+        gru_layers (int): Number of GRU layers.
+        gru_hidden_size (int): Number of features in the GRU hidden state.
+        num_bands (int): Number of frequency bands.
+        stack_dim (int): The Ddimension along which the left and right data
+    """
+
+    def __init__(
+        self,
+        in_features: int,
+        lstm_layers: int = 3,
+        lstm_hidden_size: int = 256,
+        gru_layers: int = 2,
+        gru_hidden_size: int = 256,
+        num_bands: int = 2,
+    ) -> None:
+        super().__init__()
+
+        self.num_bands = num_bands
+        self.lstm_grus = nn.ModuleList(
+            [
+                nn.Sequential(
+                    nn.LSTM(in_features, lstm_hidden_size, num_layers=lstm_layers),
+                    nn.GRU(lstm_hidden_size, gru_hidden_size, num_layers=gru_layers),
+                )
+                for _ in range(num_bands)
+            ]
+        )
+
+    def forward(self, inputs: torch.Tensor) -> torch.Tensor:
+        """
+        Forward pass for the LSTM-GRU module.
+
+        Args:
+            inputs (torch.Tensor): Shape (T, N, num_bands, electrode_channels, freq_per_band)
+
+        Returns:
+            torch.Tensor: Shape (T, N, num_bands, hidden_size)
+        """
+        assert inputs.shape[2] == self.num_bands
+
+        T, N, _, C, F = inputs.shape
+
+        # Shape: (T, N, num_bands, electrode_channels * freq_per_band)
+        inputs = inputs.view(T, N, self.num_bands, C * F)
+
+        # Shape for each: (T, N, electrode_channels * freq_per_band)
+        inputs_per_band = inputs.unbind(2)
+
+        # Shape for each: (T, N, gru_hidden_size)
+        outputs_per_band = []
+        for lstm_gru, _inputs in zip(self.lstm_grus, inputs_per_band):
+            lstm_output, _ = lstm_gru[0](_inputs)
+            gru_output, _ = lstm_gru[1](lstm_output)
+            outputs_per_band.append(gru_output)
+
+        return torch.stack(outputs_per_band, dim=2)

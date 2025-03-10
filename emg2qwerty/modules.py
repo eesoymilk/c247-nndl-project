@@ -265,9 +265,9 @@ class TDSConvEncoder(nn.Module):
         assert len(block_channels) > 0
         tds_conv_blocks: list[nn.Module] = []
         for channels in block_channels:
-            assert (
-                num_features % channels == 0
-            ), "block_channels must evenly divide num_features"
+            assert num_features % channels == 0, (
+                "block_channels must evenly divide num_features"
+            )
             tds_conv_blocks.extend(
                 [
                     TDSConv2dBlock(channels, num_features // channels, kernel_width),
@@ -278,3 +278,178 @@ class TDSConvEncoder(nn.Module):
 
     def forward(self, inputs: torch.Tensor) -> torch.Tensor:
         return self.tds_conv_blocks(inputs)  # (T, N, num_features)
+
+
+class RotationInvariantTCN(nn.Module):
+    """A rotation-invariant Temporal Convolutional Network (TCN) module.
+
+    This applies 1D convolutions over time while rotating the electrode channels
+    and pooling over rotations for invariance.
+
+    Args:
+        in_channels (int): Number of input electrode channels * frequency bins.
+        num_filters (Sequence[int]): List of feature sizes for each TCN layer.
+        kernel_size (int): Kernel size for the TCN layers.
+        dilation_base (int): Base dilation rate (e.g., 2).
+        pooling (str): Either "mean" or "max" pooling over rotated versions.
+        offsets (Sequence[int]): Rotations applied to electrode channels.
+    """
+
+    def __init__(
+        self,
+        in_channels: int,  # Number of electrode channels * frequency bins
+        num_filters: Sequence[int] = (24, 24, 24, 24),
+        kernel_size: int = 3,
+        dilation_base: int = 2,
+        pooling: str = "mean",
+        offsets: Sequence[int] = (-1, 0, 1),
+    ):
+        super().__init__()
+
+        assert len(num_filters) > 0
+        assert pooling in {"max", "mean"}, f"Unsupported pooling: {pooling}"
+
+        self.offsets = offsets if len(offsets) > 0 else (0,)
+        self.pooling = pooling
+
+        layers = []
+
+        # Create multiple TCN layers with increasing dilation
+        for i, out_channels in enumerate(num_filters):
+            # Exponential dilation
+            dilation = dilation_base**i
+
+            # Ensure proper padding
+            theoretical_padding = (kernel_size - 1) * dilation / 2
+            padding = int(theoretical_padding)
+            if not theoretical_padding.is_integer():
+                padding = [padding, padding + 1]
+
+            layers.extend(
+                [
+                    nn.ConstantPad1d(padding, 0),
+                    nn.Conv1d(
+                        in_channels,
+                        out_channels,
+                        kernel_size=kernel_size,
+                        dilation=dilation,
+                    ),
+                    nn.BatchNorm1d(out_channels),
+                    nn.ReLU(),
+                ]
+            )
+            in_channels = out_channels
+
+        self.tcn = nn.Sequential(*layers)
+
+    def forward(self, inputs: torch.Tensor) -> torch.Tensor:
+        """
+        Forward pass for the Rotation-Invariant TCN.
+
+        Args:
+            inputs (torch.Tensor): Shape (T, N, electrode_channels, freq)
+
+        Returns:
+            torch.Tensor: Shape (T, N, num_filters[-1])
+        """
+        T, N, C, F = inputs.shape  # Time, Batch, Electrode Channels, Frequency
+
+        # Merge electrode channels and frequency into a single feature vector per time step
+        inputs = inputs.view(T, N, C * F)  # Shape: (T, N, in_channels)
+
+        # Rotate electrode channels
+        # Shape: (T, N, rotations, in_channels)
+        rotated_inputs = torch.stack(
+            [inputs.roll(offset, dims=2) for offset in self.offsets], dim=2
+        )
+
+        # Merge "rotations" into batch dimension: (T, N * rotations, in_channels)
+        T, N, rotations, D = rotated_inputs.shape
+        rotated_inputs = rotated_inputs.view(T, N * rotations, D)
+
+        # Transpose for 1D CNN: (N * rotations, in_channels, T)
+        rotated_inputs = rotated_inputs.permute(1, 2, 0)
+
+        # Apply TCN over time
+        x = self.tcn(rotated_inputs)  # (N * rotations, num_filters[-1], T)
+
+        # Reshape back to (T, N, rotations, num_filters[-1])
+        x = x.permute(2, 0, 1).view(T, N, rotations, -1)
+
+        # Pool over rotations to ensure rotation invariance
+        if self.pooling == "max":
+            return x.max(dim=2).values  # (T, N, num_filters[-1])
+        else:
+            return x.mean(dim=2)  # (T, N, num_filters[-1])
+
+
+class MultiBandRotationInvariantTCN(nn.Module):
+    """A rotation-invariant MultiBand Temporal Convolutional Network (TCN).
+
+    Each frequency band is processed separately through its own Rotation-Invariant TCN.
+    The outputs are then pooled or concatenated across bands.
+
+    Args:
+        in_channels (int): Number of electrode channels.
+        num_filters (Sequence[int]): Feature sizes per TCN layer.
+        num_bands (int): Number of frequency bands.
+        kernel_size (int): Kernel size for TCN layers.
+        dilation_base (int): Base dilation rate (e.g., 2).
+        pooling (str): Either "mean" or "max" pooling over rotated versions.
+        band_merge_mode (str): "concat" to concatenate band outputs or "mean" to average.
+        offsets (Sequence[int]): List of rotations for electrode channels.
+    """
+
+    def __init__(
+        self,
+        in_channels: int,  # Number of electrode channels
+        num_filters: Sequence[int],  # Feature map sizes per layer
+        kernel_size: int = 3,
+        dilation_base: int = 2,
+        pooling: str = "mean",
+        offsets: Sequence[int] = (-1, 0, 1),
+        num_bands: int = 2,
+        stack_dim: int = 2,
+    ):
+        super().__init__()
+
+        assert len(num_filters) > 0
+        assert pooling in {"max", "mean"}, f"Unsupported pooling: {pooling}"
+
+        self.num_bands = num_bands
+        self.stack_dim = stack_dim
+        self.pooling = pooling
+        self.offsets = offsets if len(offsets) > 0 else (0,)
+
+        # Create a separate TCN for each band
+        self.band_tcns = nn.ModuleList(
+            [
+                RotationInvariantTCN(
+                    in_channels=in_channels,
+                    num_filters=num_filters,
+                    kernel_size=kernel_size,
+                    dilation_base=dilation_base,
+                    pooling=pooling,
+                    offsets=offsets,
+                )
+                for _ in range(num_bands)
+            ]
+        )
+
+    def forward(self, inputs: torch.Tensor) -> torch.Tensor:
+        """
+        Forward pass for the MultiBand Rotation-Invariant TCN.
+
+        Args:
+            inputs (torch.Tensor): Shape (T, N, num_bands, electrode_channels, freq_per_band)
+
+        Returns:
+            torch.Tensor: Shape (T, N, num_filters[-1])
+        """
+        assert inputs.shape[self.stack_dim] == self.num_bands
+
+        inputs_per_band = inputs.unbind(self.stack_dim)
+        band_outputs = [
+            tcn(_input) for tcn, _input in zip(self.band_tcns, inputs_per_band)
+        ]
+        return torch.stack(band_outputs, dim=self.stack_dim)

@@ -321,15 +321,3 @@ class ZScoreNormalize:
         mean = tensor.mean(dim=0, keepdim=True)
         std = tensor.std(dim=0, keepdim=True)
         return (tensor - mean) / (std + 1e-6)  # Add epsilon to avoid division by zero
-
-
-# @dataclass
-# class RandomTimeWarping:
-#     """Randomly warps the time dimension of the input tensor."""
-
-#     def __call__(self, tensor: torch.Tensor, max_warp: float = 0.2) -> torch.Tensor:
-#         time_length = tensor.shape[0]
-#         warp_factor = 1 + np.random.uniform(-max_warp, max_warp)
-#         new_time_length = int(time_length * warp_factor)
-#         new_tensor = torch.nn.functional.interpolate(tensor.unsqueeze(0).unsqueeze(0), size=new_time_length, mode='linear').squeeze()
-#         return new_tensor

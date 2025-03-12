@@ -25,25 +25,9 @@ specaug:
   n_freq_masks: 2
   freq_mask_param: 4
 
-bandpass:
-  _target_: emg2qwerty.transforms.BandpassFilter
-  lowcut: 20.0
-  highcut: 500.0
-
-notch:
-  _target_: emg2qwerty.transforms.NotchFilter
-  notch_freq: 50.0
-  Q: 10.0
-
-z_score:
-  _target_: emg2qwerty.transforms.ZScoreNormalize
-
 transforms:
   train:
     - ${to_tensor}
-    - ${bandpass}
-    - ${notch}
-    - ${z_score}
     - ${band_rotation}
     - ${temporal_jitter}
     - ${logspec}

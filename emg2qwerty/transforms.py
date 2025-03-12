@@ -246,17 +246,18 @@ class SpecAugment:
         # (..., C, freq, T) -> (T, ..., C, freq)
         return x.movedim(-1, 0)
 
+
 @dataclass
 class BandpassFilter:
     """Applies a Butterworth bandpass filter to EMG signals.
-    
+
     Typical EMG signals are in the range of 20-150Hz, so we use a bandpass filter
     to remove noise outside this range.
 
     Args:
         lowcut (float): Lower cutoff frequency of the bandpass filter. (default: 20.0)
         highcut (float): Upper cutoff frequency of the bandpass filter. (default: 150.0)
-        fs (int): Sampling rate of the EMG signal. 
+        fs (int): Sampling rate of the EMG signal.
         order (int): Order of the Butterworth filter.
     """
 
@@ -277,10 +278,11 @@ class BandpassFilter:
         filtered = filtered.copy()
         return torch.tensor(filtered, dtype=torch.float32)
 
+
 @dataclass
 class NotchFilter:
     """Applies a Butterworth notch filter to EMG signals.
-    
+
     Typical EMG signals have a 50Hz noise due to electrical interference, so we use a notch filter
     to remove this noise.
 
@@ -299,7 +301,9 @@ class NotchFilter:
         notch = self.notch_freq / nyquist
         lower_freq = max(0.001, notch - 1 / self.Q)
         upper_freq = notch + 1 / self.Q
-        print(f"Notch frequency: {self.notch_freq}, Nyquist: {nyquist}, Lower freq: {lower_freq}, Upper freq: {upper_freq}")
+        print(
+            f"Notch frequency: {self.notch_freq}, Nyquist: {nyquist}, Lower freq: {lower_freq}, Upper freq: {upper_freq}"
+        )
         self.b, self.a = butter(2, [lower_freq, upper_freq], btype="bandstop")
 
     def __call__(self, tensor: torch.Tensor) -> torch.Tensor:
@@ -308,6 +312,7 @@ class NotchFilter:
         filtered = filtered.copy()
         return torch.tensor(filtered, dtype=torch.float32)
 
+
 @dataclass
 class ZScoreNormalize:
     """Performs Z-score normalization on the EMG signals."""
@@ -315,8 +320,9 @@ class ZScoreNormalize:
     def __call__(self, tensor: torch.Tensor) -> torch.Tensor:
         mean = tensor.mean(dim=0, keepdim=True)
         std = tensor.std(dim=0, keepdim=True)
-        return (tensor - mean) / (std + 1e-6)   # Add epsilon to avoid division by zero
-    
+        return (tensor - mean) / (std + 1e-6)  # Add epsilon to avoid division by zero
+
+
 # @dataclass
 # class RandomTimeWarping:
 #     """Randomly warps the time dimension of the input tensor."""

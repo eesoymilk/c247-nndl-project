@@ -321,7 +321,7 @@ class RotationInvariantTCN(nn.Module):
 
             # Ensure proper padding
             theoretical_padding = (kernel_size - 1) * dilation / 2
-            padding = int(theoretical_padding)
+            padding: int | list[int] = int(theoretical_padding)
             if not theoretical_padding.is_integer():
                 padding = [padding, padding + 1]
 

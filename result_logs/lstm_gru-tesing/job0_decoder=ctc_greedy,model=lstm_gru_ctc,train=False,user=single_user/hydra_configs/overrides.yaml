@@ -1,0 +1,6 @@
+- user=single_user
+- model=lstm_gru_ctc
+- checkpoint=result_logs/lstm_gru-training/epoch95_step23040.ckpt
+- train=False
+- trainer.accelerator=gpu
+- decoder=ctc_greedy

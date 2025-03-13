@@ -1,0 +1,135 @@
+Global seed set to 1501
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+IPU available: False, using: 0 IPUs
+HPU available: False, using: 0 HPUs
+Missing logger folder: /home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/lightning_logs
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0]
+/home/eesoymilk/miniconda3/envs/emg2qwerty/lib/python3.10/site-packages/pl_bolts/__init__.py:11: FutureWarning: In the future `np.object` will be defined as the corresponding NumPy scalar.
+  if not hasattr(numpy, tp_name):
+/home/eesoymilk/miniconda3/envs/emg2qwerty/lib/python3.10/site-packages/pl_bolts/__init__.py:11: FutureWarning: In the future `np.bool` will be defined as the corresponding NumPy scalar.
+  if not hasattr(numpy, tp_name):
+/home/eesoymilk/miniconda3/envs/emg2qwerty/lib/python3.10/site-packages/pl_bolts/models/self_supervised/amdim/amdim_module.py:34: UnderReviewWarning: The feature generate_power_seq is currently marked under review. The compatibility with other Lightning projects is not guaranteed and API may change at any time. The API and functionality may change without warning in future releases. More details: https://lightning-bolts.readthedocs.io/en/latest/stability.html
+  "lr_options": generate_power_seq(LEARNING_RATE_CIFAR, 11),
+/home/eesoymilk/miniconda3/envs/emg2qwerty/lib/python3.10/site-packages/pl_bolts/models/self_supervised/amdim/amdim_module.py:92: UnderReviewWarning: The feature FeatureMapContrastiveTask is currently marked under review. The compatibility with other Lightning projects is not guaranteed and API may change at any time. The API and functionality may change without warning in future releases. More details: https://lightning-bolts.readthedocs.io/en/latest/stability.html
+  contrastive_task: Union[FeatureMapContrastiveTask] = FeatureMapContrastiveTask("01, 02, 11"),
+/home/eesoymilk/miniconda3/envs/emg2qwerty/lib/python3.10/site-packages/pl_bolts/losses/self_supervised_learning.py:228: UnderReviewWarning: The feature AmdimNCELoss is currently marked under review. The compatibility with other Lightning projects is not guaranteed and API may change at any time. The API and functionality may change without warning in future releases. More details: https://lightning-bolts.readthedocs.io/en/latest/stability.html
+  self.nce_loss = AmdimNCELoss(tclip)
+/home/eesoymilk/miniconda3/envs/emg2qwerty/lib/python3.10/site-packages/hydra/_internal/instantiate/_instantiate2.py:92: UnderReviewWarning: The feature LinearWarmupCosineAnnealingLR is currently marked under review. The compatibility with other Lightning projects is not guaranteed and API may change at any time. The API and functionality may change without warning in future releases. More details: https://lightning-bolts.readthedocs.io/en/latest/stability.html
+  return _target_(*args, **kwargs)
+
+  | Name     | Type       | Params
+----------------------------------------
+0 | ctc_loss | CTCLoss    | 0     
+1 | metrics  | ModuleDict | 0     
+2 | model    | Sequential | 1.9 M 
+----------------------------------------
+1.9 M     Trainable params
+0         Non-trainable params
+1.9 M     Total params
+7.702     Total estimated model params size (MB)
+/home/eesoymilk/miniconda3/envs/emg2qwerty/lib/python3.10/site-packages/pytorch_lightning/trainer/connectors/data_connector.py:224: PossibleUserWarning: The dataloader, val_dataloader 0, does not have many workers which may be a bottleneck. Consider increasing the value of the `num_workers` argument` (try 16 which is the number of cpus on this machine) in the `DataLoader` init to improve performance.
+  rank_zero_warn(
+/home/eesoymilk/miniconda3/envs/emg2qwerty/lib/python3.10/site-packages/pytorch_lightning/trainer/connectors/data_connector.py:224: PossibleUserWarning: The dataloader, train_dataloader, does not have many workers which may be a bottleneck. Consider increasing the value of the `num_workers` argument` (try 16 which is the number of cpus on this machine) in the `DataLoader` init to improve performance.
+  rank_zero_warn(
+Epoch 0, global step 240: 'val/CER' reached 433.34073 (best 433.34073), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=0-step=240.ckpt' as top 1
+Epoch 1, global step 480: 'val/CER' reached 100.00000 (best 100.00000), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=1-step=480.ckpt' as top 1
+Epoch 2, global step 720: 'val/CER' was not in top 1
+Epoch 3, global step 960: 'val/CER' was not in top 1
+Epoch 4, global step 1200: 'val/CER' was not in top 1
+Epoch 5, global step 1440: 'val/CER' was not in top 1
+Epoch 6, global step 1680: 'val/CER' was not in top 1
+Epoch 7, global step 1920: 'val/CER' was not in top 1
+Epoch 8, global step 2160: 'val/CER' was not in top 1
+Epoch 9, global step 2400: 'val/CER' was not in top 1
+Epoch 10, global step 2640: 'val/CER' was not in top 1
+Epoch 11, global step 2880: 'val/CER' was not in top 1
+Epoch 12, global step 3120: 'val/CER' was not in top 1
+Epoch 13, global step 3360: 'val/CER' was not in top 1
+Epoch 14, global step 3600: 'val/CER' was not in top 1
+Epoch 15, global step 3840: 'val/CER' was not in top 1
+Epoch 16, global step 4080: 'val/CER' was not in top 1
+Epoch 17, global step 4320: 'val/CER' was not in top 1
+Epoch 18, global step 4560: 'val/CER' reached 89.29996 (best 89.29996), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=18-step=4560.ckpt' as top 1
+Epoch 19, global step 4800: 'val/CER' reached 84.75853 (best 84.75853), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=19-step=4800.ckpt' as top 1
+Epoch 20, global step 5040: 'val/CER' reached 60.92158 (best 60.92158), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=20-step=5040.ckpt' as top 1
+Epoch 21, global step 5280: 'val/CER' reached 52.72486 (best 52.72486), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=21-step=5280.ckpt' as top 1
+Epoch 22, global step 5520: 'val/CER' was not in top 1
+Epoch 23, global step 5760: 'val/CER' was not in top 1
+Epoch 24, global step 6000: 'val/CER' was not in top 1
+Epoch 25, global step 6240: 'val/CER' was not in top 1
+Epoch 26, global step 6480: 'val/CER' was not in top 1
+Epoch 27, global step 6720: 'val/CER' reached 49.93354 (best 49.93354), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=27-step=6720.ckpt' as top 1
+Epoch 28, global step 6960: 'val/CER' reached 46.58839 (best 46.58839), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=28-step=6960.ckpt' as top 1
+Epoch 29, global step 7200: 'val/CER' was not in top 1
+Epoch 30, global step 7440: 'val/CER' reached 42.77802 (best 42.77802), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=30-step=7440.ckpt' as top 1
+Epoch 31, global step 7680: 'val/CER' was not in top 1
+Epoch 32, global step 7920: 'val/CER' reached 41.49313 (best 41.49313), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=32-step=7920.ckpt' as top 1
+Epoch 33, global step 8160: 'val/CER' reached 38.59105 (best 38.59105), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=33-step=8160.ckpt' as top 1
+Epoch 34, global step 8400: 'val/CER' was not in top 1
+Epoch 35, global step 8640: 'val/CER' was not in top 1
+Epoch 36, global step 8880: 'val/CER' was not in top 1
+Epoch 37, global step 9120: 'val/CER' was not in top 1
+Epoch 38, global step 9360: 'val/CER' reached 36.92955 (best 36.92955), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=38-step=9360.ckpt' as top 1
+Epoch 39, global step 9600: 'val/CER' reached 35.51174 (best 35.51174), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=39-step=9600.ckpt' as top 1
+Epoch 40, global step 9840: 'val/CER' reached 35.24590 (best 35.24590), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=40-step=9840.ckpt' as top 1
+Epoch 41, global step 10080: 'val/CER' reached 32.78688 (best 32.78688), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=41-step=10080.ckpt' as top 1
+Epoch 42, global step 10320: 'val/CER' was not in top 1
+Epoch 43, global step 10560: 'val/CER' was not in top 1
+Epoch 44, global step 10800: 'val/CER' reached 31.19185 (best 31.19185), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=44-step=10800.ckpt' as top 1
+Epoch 45, global step 11040: 'val/CER' was not in top 1
+Epoch 46, global step 11280: 'val/CER' was not in top 1
+Epoch 47, global step 11520: 'val/CER' was not in top 1
+Epoch 48, global step 11760: 'val/CER' was not in top 1
+Epoch 49, global step 12000: 'val/CER' was not in top 1
+Epoch 50, global step 12240: 'val/CER' was not in top 1
+Epoch 51, global step 12480: 'val/CER' was not in top 1
+Epoch 52, global step 12720: 'val/CER' reached 30.63802 (best 30.63802), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=52-step=12720.ckpt' as top 1
+Epoch 53, global step 12960: 'val/CER' was not in top 1
+Epoch 54, global step 13200: 'val/CER' was not in top 1
+Epoch 55, global step 13440: 'val/CER' reached 30.61586 (best 30.61586), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=55-step=13440.ckpt' as top 1
+Epoch 56, global step 13680: 'val/CER' reached 29.44174 (best 29.44174), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=56-step=13680.ckpt' as top 1
+Epoch 57, global step 13920: 'val/CER' reached 28.55560 (best 28.55560), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=57-step=13920.ckpt' as top 1
+Epoch 58, global step 14160: 'val/CER' reached 27.69163 (best 27.69163), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=58-step=14160.ckpt' as top 1
+Epoch 59, global step 14400: 'val/CER' was not in top 1
+Epoch 60, global step 14640: 'val/CER' was not in top 1
+Epoch 61, global step 14880: 'val/CER' reached 27.04918 (best 27.04918), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=61-step=14880.ckpt' as top 1
+Epoch 62, global step 15120: 'val/CER' was not in top 1
+Epoch 63, global step 15360: 'val/CER' reached 26.20736 (best 26.20736), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=63-step=15360.ckpt' as top 1
+Epoch 64, global step 15600: 'val/CER' reached 25.43199 (best 25.43199), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=64-step=15600.ckpt' as top 1
+Epoch 65, global step 15840: 'val/CER' reached 25.25476 (best 25.25476), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=65-step=15840.ckpt' as top 1
+Epoch 66, global step 16080: 'val/CER' was not in top 1
+Epoch 67, global step 16320: 'val/CER' was not in top 1
+Epoch 68, global step 16560: 'val/CER' was not in top 1
+Epoch 69, global step 16800: 'val/CER' was not in top 1
+Epoch 70, global step 17040: 'val/CER' was not in top 1
+Epoch 71, global step 17280: 'val/CER' reached 23.92557 (best 23.92557), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=71-step=17280.ckpt' as top 1
+Epoch 72, global step 17520: 'val/CER' was not in top 1
+Epoch 73, global step 17760: 'val/CER' reached 23.81480 (best 23.81480), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=73-step=17760.ckpt' as top 1
+Epoch 74, global step 18000: 'val/CER' was not in top 1
+Epoch 75, global step 18240: 'val/CER' was not in top 1
+Epoch 76, global step 18480: 'val/CER' reached 23.65973 (best 23.65973), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=76-step=18480.ckpt' as top 1
+Epoch 77, global step 18720: 'val/CER' was not in top 1
+Epoch 78, global step 18960: 'val/CER' reached 23.23881 (best 23.23881), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=78-step=18960.ckpt' as top 1
+Epoch 79, global step 19200: 'val/CER' was not in top 1
+Epoch 80, global step 19440: 'val/CER' reached 23.17235 (best 23.17235), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=80-step=19440.ckpt' as top 1
+Epoch 81, global step 19680: 'val/CER' was not in top 1
+Epoch 82, global step 19920: 'val/CER' was not in top 1
+Epoch 83, global step 20160: 'val/CER' reached 23.12805 (best 23.12805), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=83-step=20160.ckpt' as top 1
+Epoch 84, global step 20400: 'val/CER' reached 22.35268 (best 22.35268), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=84-step=20400.ckpt' as top 1
+Epoch 85, global step 20640: 'val/CER' reached 22.28622 (best 22.28622), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=85-step=20640.ckpt' as top 1
+Epoch 86, global step 20880: 'val/CER' was not in top 1
+Epoch 87, global step 21120: 'val/CER' was not in top 1
+Epoch 88, global step 21360: 'val/CER' reached 22.24191 (best 22.24191), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=88-step=21360.ckpt' as top 1
+Epoch 89, global step 21600: 'val/CER' was not in top 1
+Epoch 90, global step 21840: 'val/CER' was not in top 1
+Epoch 91, global step 22080: 'val/CER' was not in top 1
+Epoch 92, global step 22320: 'val/CER' reached 22.17546 (best 22.17546), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=92-step=22320.ckpt' as top 1
+Epoch 93, global step 22560: 'val/CER' reached 21.99823 (best 21.99823), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=93-step=22560.ckpt' as top 1
+Epoch 94, global step 22800: 'val/CER' was not in top 1
+Epoch 95, global step 23040: 'val/CER' reached 21.95392 (best 21.95392), saving model to '/home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-24-47/job0_model=lstm_gru_ctc,trainer.devices=1,user=single_user/checkpoints/epoch=95-step=23040.ckpt' as top 1
+Epoch 96, global step 23280: 'val/CER' was not in top 1
+Epoch 97, global step 23520: 'val/CER' was not in top 1
+Epoch 98, global step 23760: 'val/CER' was not in top 1
+Epoch 99, global step 24000: 'val/CER' was not in top 1
+`Trainer.fit` stopped: `max_epochs=100` reached.

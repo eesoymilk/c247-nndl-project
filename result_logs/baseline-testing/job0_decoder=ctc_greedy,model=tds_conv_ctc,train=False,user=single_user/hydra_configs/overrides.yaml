@@ -1,0 +1,5 @@
+- user=single_user
+- model=tds_conv_ctc
+- train=False
+- trainer.accelerator=gpu
+- decoder=ctc_greedy

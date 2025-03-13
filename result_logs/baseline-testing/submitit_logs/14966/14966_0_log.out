@@ -1,6 +1,6 @@
-submitit INFO (2025-03-12 20:14:49,652) - Starting with JobEnvironment(job_id=7550, hostname=Zephyrus-G14, local_rank=0(1), node=0(1), global_rank=0(1))
-submitit INFO (2025-03-12 20:14:49,653) - Loading pickle: /home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/20-14-49/submitit_logs/7550/7550_submitted.pkl
-[2025-03-12 20:14:52,250][__main__][INFO] - 
+submitit INFO (2025-03-12 22:16:49,255) - Starting with JobEnvironment(job_id=14966, hostname=Zephyrus-G14, local_rank=0(1), node=0(1), global_rank=0(1))
+submitit INFO (2025-03-12 22:16:49,255) - Loading pickle: /home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-16-48/submitit_logs/14966/14966_submitted.pkl
+[2025-03-12 22:16:52,135][__main__][INFO] - 
 Config:
 user: single_user
 dataset:
@@ -70,6 +70,19 @@ specaug:
   time_mask_param: 25
   n_freq_masks: 2
   freq_mask_param: 4
+bandpass:
+  _target_: emg2qwerty.transforms.BandpassFilter
+  lowcut: 20.0
+  highcut: 500.0
+notch:
+  _target_: emg2qwerty.transforms.NotchFilter
+  notch_freq: 50.0
+  Q: 10.0
+z_score:
+  _target_: emg2qwerty.transforms.ZScoreNormalize
+additive_noise:
+  _target_: emg2qwerty.transforms.AdaptiveGaussianNoise
+  noise_ratio: 0.05
 transforms:
   train:
   - ${to_tensor}
@@ -115,7 +128,7 @@ seed: 1501
 batch_size: 16
 num_workers: 2
 train: false
-checkpoint: null
+checkpoint: result_logs/baseline-training/epoch73_step17760.ckpt
 monitor_metric: val/CER
 monitor_mode: min
 trainer:
@@ -133,40 +146,41 @@ callbacks:
   save_last: true
   verbose: true
 
-[2025-03-12 20:14:52,255][__main__][INFO] - Instantiating LightningModule {'_target_': 'emg2qwerty.lightning.TDSConvCTCModule', 'in_features': 528, 'mlp_features': [384], 'block_channels': [24, 24, 24, 24], 'kernel_width': 32}
-[2025-03-12 20:14:52,371][__main__][INFO] - Instantiating LightningDataModule {'_target_': 'emg2qwerty.lightning.WindowedEMGDataModule', 'window_length': 8000, 'padding': [1800, 200]}
-Validation: 0it [00:00, ?it/s]Validation:   0%|          | 0/14 [00:00<?, ?it/s]Validation DataLoader 0:   0%|          | 0/14 [00:00<?, ?it/s]Validation DataLoader 0:   7%|▋         | 1/14 [00:00<00:06,  1.86it/s]Validation DataLoader 0:  14%|█▍        | 2/14 [00:00<00:03,  3.31it/s]Validation DataLoader 0:  21%|██▏       | 3/14 [00:00<00:02,  4.47it/s]Validation DataLoader 0:  29%|██▊       | 4/14 [00:00<00:01,  5.42it/s]Validation DataLoader 0:  36%|███▌      | 5/14 [00:00<00:01,  6.21it/s]Validation DataLoader 0:  43%|████▎     | 6/14 [00:00<00:01,  6.94it/s]Validation DataLoader 0:  50%|█████     | 7/14 [00:00<00:00,  7.55it/s]Validation DataLoader 0:  57%|█████▋    | 8/14 [00:01<00:00,  7.77it/s]Validation DataLoader 0:  64%|██████▍   | 9/14 [00:01<00:00,  7.92it/s]Validation DataLoader 0:  71%|███████▏  | 10/14 [00:01<00:00,  8.07it/s]Validation DataLoader 0:  79%|███████▊  | 11/14 [00:01<00:00,  8.21it/s]Validation DataLoader 0:  86%|████████▌ | 12/14 [00:01<00:00,  8.32it/s]Validation DataLoader 0:  93%|█████████▎| 13/14 [00:01<00:00,  8.52it/s]Validation DataLoader 0: 100%|██████████| 14/14 [00:01<00:00,  9.00it/s]Validation DataLoader 0: 100%|██████████| 14/14 [00:01<00:00,  8.96it/s]
+[2025-03-12 22:16:52,137][__main__][INFO] - Instantiating LightningModule {'_target_': 'emg2qwerty.lightning.TDSConvCTCModule', 'in_features': 528, 'mlp_features': [384], 'block_channels': [24, 24, 24, 24], 'kernel_width': 32}
+[2025-03-12 22:16:52,217][__main__][INFO] - Loading module from checkpoint result_logs/baseline-training/epoch73_step17760.ckpt
+[2025-03-12 22:16:52,314][__main__][INFO] - Instantiating LightningDataModule {'_target_': 'emg2qwerty.lightning.WindowedEMGDataModule', 'window_length': 8000, 'padding': [1800, 200]}
+Validation: 0it [00:00, ?it/s]Validation:   0%|          | 0/14 [00:00<?, ?it/s]Validation DataLoader 0:   0%|          | 0/14 [00:00<?, ?it/s]Validation DataLoader 0:   7%|▋         | 1/14 [00:00<00:08,  1.56it/s]Validation DataLoader 0:  14%|█▍        | 2/14 [00:00<00:04,  2.76it/s]Validation DataLoader 0:  21%|██▏       | 3/14 [00:00<00:03,  3.23it/s]Validation DataLoader 0:  29%|██▊       | 4/14 [00:01<00:02,  3.90it/s]Validation DataLoader 0:  36%|███▌      | 5/14 [00:01<00:02,  4.06it/s]Validation DataLoader 0:  43%|████▎     | 6/14 [00:01<00:01,  4.51it/s]Validation DataLoader 0:  50%|█████     | 7/14 [00:01<00:01,  4.57it/s]Validation DataLoader 0:  57%|█████▋    | 8/14 [00:01<00:01,  4.89it/s]Validation DataLoader 0:  64%|██████▍   | 9/14 [00:01<00:01,  4.90it/s]Validation DataLoader 0:  71%|███████▏  | 10/14 [00:01<00:00,  5.17it/s]Validation DataLoader 0:  79%|███████▊  | 11/14 [00:02<00:00,  5.16it/s]Validation DataLoader 0:  86%|████████▌ | 12/14 [00:02<00:00,  5.38it/s]Validation DataLoader 0:  93%|█████████▎| 13/14 [00:02<00:00,  5.39it/s]Validation DataLoader 0: 100%|██████████| 14/14 [00:02<00:00,  5.63it/s]Validation DataLoader 0: 100%|██████████| 14/14 [00:02<00:00,  5.62it/s]
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
      Validate metric           DataLoader 0
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-         val/CER              669.7607421875
-         val/DER             590.6734619140625
-         val/IER            0.35445281863212585
-         val/SER             78.73283386230469
-        val/loss            104.95051574707031
+         val/CER             19.78289794921875
+         val/DER            1.7058041095733643
+         val/IER             4.541426658630371
+         val/SER            13.535666465759277
+        val/loss            0.9744623303413391
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Testing: 0it [00:00, ?it/s]Testing:   0%|          | 0/1 [00:00<?, ?it/s]Testing DataLoader 0:   0%|          | 0/1 [00:00<?, ?it/s]Testing DataLoader 0: 100%|██████████| 1/1 [00:04<00:00,  4.17s/it]Testing DataLoader 0: 100%|██████████| 1/1 [00:04<00:00,  4.18s/it]
+Testing: 0it [00:00, ?it/s]Testing:   0%|          | 0/1 [00:00<?, ?it/s]Testing DataLoader 0:   0%|          | 0/1 [00:00<?, ?it/s]Testing DataLoader 0: 100%|██████████| 1/1 [00:06<00:00,  6.85s/it]Testing DataLoader 0: 100%|██████████| 1/1 [00:06<00:00,  6.89s/it]
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
        Test metric             DataLoader 0
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-        test/CER            1250.4429931640625
-        test/DER             1189.02099609375
-        test/IER                    0.0
-        test/SER            61.422088623046875
-        test/loss            118.174560546875
+        test/CER             21.85000991821289
+        test/DER             2.053166151046753
+        test/IER             4.127944469451904
+        test/SER            15.668899536132812
+        test/loss           0.9977063536643982
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-{'val_metrics': [{'val/loss': 104.95051574707031,
-                  'val/CER': 669.7607421875,
-                  'val/IER': 0.35445281863212585,
-                  'val/DER': 590.6734619140625,
-                  'val/SER': 78.73283386230469}],
- 'test_metrics': [{'test/loss': 118.174560546875,
-                   'test/CER': 1250.4429931640625,
-                   'test/IER': 0.0,
-                   'test/DER': 1189.02099609375,
-                   'test/SER': 61.422088623046875}],
+{'val_metrics': [{'val/loss': 0.9744623303413391,
+                  'val/CER': 19.78289794921875,
+                  'val/IER': 4.541426658630371,
+                  'val/DER': 1.7058041095733643,
+                  'val/SER': 13.535666465759277}],
+ 'test_metrics': [{'test/loss': 0.9977063536643982,
+                   'test/CER': 21.85000991821289,
+                   'test/IER': 4.127944469451904,
+                   'test/DER': 2.053166151046753,
+                   'test/SER': 15.668899536132812}],
  'best_checkpoint': ''}
-submitit INFO (2025-03-12 20:15:04,197) - Job completed successfully
-[2025-03-12 20:15:04,197][submitit][INFO] - Job completed successfully
-submitit INFO (2025-03-12 20:15:04,201) - Exiting after successful completion
-[2025-03-12 20:15:04,201][submitit][INFO] - Exiting after successful completion
+submitit INFO (2025-03-12 22:17:10,003) - Job completed successfully
+[2025-03-12 22:17:10,003][submitit][INFO] - Job completed successfully
+submitit INFO (2025-03-12 22:17:10,011) - Exiting after successful completion
+[2025-03-12 22:17:10,011][submitit][INFO] - Exiting after successful completion

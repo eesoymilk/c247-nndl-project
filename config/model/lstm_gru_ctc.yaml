@@ -5,7 +5,7 @@ module:
   lstm_layers: 3
   lstm_dropout: 0.3
   between_dropout: 0.25
-  gru_hidden_size: 128
+  gru_hidden_size: 64
   gru_layers: 2
   gru_bidirectional: True
   gru_dropout: 0.2

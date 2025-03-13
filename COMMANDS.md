@@ -20,7 +20,7 @@ python -m emg2qwerty.train \
 python -m emg2qwerty.train \
     user=single_user \
     model=tds_conv_ctc \
-    checkpoint="./path/to/ckpt" \
+    checkpoint="result_logs/baseline-training/epoch73_step17760.ckpt" \
     train=False \
     trainer.accelerator=gpu \
     decoder=ctc_greedy \
@@ -47,7 +47,7 @@ python -m emg2qwerty.train \
 python -m emg2qwerty.train \
     user=single_user \
     model=tds_conv_ctc \
-    checkpoint="./path/to/ckpt" \
+    checkpoint="result_logs/baseline_custom_transforms-training/epoch37_step9120.ckpt" \
     transforms=custom \
     train=False \
     trainer.accelerator=gpu \

@@ -317,6 +317,18 @@ class ZScoreNormalize:
         std = tensor.std(dim=0, keepdim=True)
         return (tensor - mean) / (std + 1e-6)   # Add epsilon to avoid division by zero
     
+@dataclass
+class AdaptiveGaussianNoise:
+    """Adds Gaussian noise to the input tensor with adaptive noise intensity."""
+
+    noise_ratio: float = 0.05  
+
+    def __call__(self, tensor: torch.Tensor) -> torch.Tensor:
+        std = tensor.std(dim=0, keepdim=True) 
+        noise = torch.randn_like(tensor) * (std * self.noise_ratio)
+        return tensor + noise
+
+    
 # @dataclass
 # class RandomTimeWarping:
 #     """Randomly warps the time dimension of the input tensor."""

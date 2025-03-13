@@ -38,12 +38,13 @@ notch:
 z_score:
   _target_: emg2qwerty.transforms.ZScoreNormalize
 
+additive_noise:
+  _target_: emg2qwerty.transforms.AdaptiveGaussianNoise
+  noise_ratio: 0.05
+
 transforms:
   train:
     - ${to_tensor}
-    - ${bandpass}
-    - ${notch}
-    - ${z_score}
     - ${band_rotation}
     - ${temporal_jitter}
     - ${logspec}

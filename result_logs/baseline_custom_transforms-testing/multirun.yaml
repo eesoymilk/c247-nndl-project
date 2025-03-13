@@ -124,6 +124,7 @@ hydra:
     task:
     - user=single_user
     - model=tds_conv_ctc
+    - checkpoint=result_logs/baseline_custom_transforms-training/epoch37_step9120.ckpt
     - transforms=custom
     - train=False
     - trainer.accelerator=gpu
@@ -256,12 +257,16 @@ notch:
   Q: 10.0
 z_score:
   _target_: emg2qwerty.transforms.ZScoreNormalize
+additive_noise:
+  _target_: emg2qwerty.transforms.AdaptiveGaussianNoise
+  noise_ratio: 0.05
 transforms:
   train:
   - ${to_tensor}
   - ${bandpass}
   - ${notch}
   - ${z_score}
+  - ${additive_noise}
   - ${band_rotation}
   - ${temporal_jitter}
   - ${logspec}
@@ -304,7 +309,7 @@ seed: 1501
 batch_size: 16
 num_workers: 2
 train: false
-checkpoint: null
+checkpoint: result_logs/baseline_custom_transforms-training/epoch37_step9120.ckpt
 monitor_metric: val/CER
 monitor_mode: min
 trainer:

@@ -124,6 +124,7 @@ hydra:
     task:
     - user=single_user
     - model=tds_conv_ctc
+    - checkpoint=result_logs/baseline-training/epoch73_step17760.ckpt
     - train=False
     - trainer.accelerator=gpu
     - decoder=ctc_greedy
@@ -245,6 +246,19 @@ specaug:
   time_mask_param: 25
   n_freq_masks: 2
   freq_mask_param: 4
+bandpass:
+  _target_: emg2qwerty.transforms.BandpassFilter
+  lowcut: 20.0
+  highcut: 500.0
+notch:
+  _target_: emg2qwerty.transforms.NotchFilter
+  notch_freq: 50.0
+  Q: 10.0
+z_score:
+  _target_: emg2qwerty.transforms.ZScoreNormalize
+additive_noise:
+  _target_: emg2qwerty.transforms.AdaptiveGaussianNoise
+  noise_ratio: 0.05
 transforms:
   train:
   - ${to_tensor}
@@ -290,7 +304,7 @@ seed: 1501
 batch_size: 16
 num_workers: 2
 train: false
-checkpoint: null
+checkpoint: result_logs/baseline-training/epoch73_step17760.ckpt
 monitor_metric: val/CER
 monitor_mode: min
 trainer:

@@ -1,0 +1,186 @@
+submitit INFO (2025-03-12 22:16:49,255) - Starting with JobEnvironment(job_id=14966, hostname=Zephyrus-G14, local_rank=0(1), node=0(1), global_rank=0(1))
+submitit INFO (2025-03-12 22:16:49,255) - Loading pickle: /home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-16-48/submitit_logs/14966/14966_submitted.pkl
+[2025-03-12 22:16:52,135][__main__][INFO] - 
+Config:
+user: single_user
+dataset:
+  train:
+  - user: 89335547
+    session: 2021-06-03-1622765527-keystrokes-dca-study@1-0efbe614-9ae6-4131-9192-4398359b4f5f
+  - user: 89335547
+    session: 2021-06-02-1622681518-keystrokes-dca-study@1-0efbe614-9ae6-4131-9192-4398359b4f5f
+  - user: 89335547
+    session: 2021-06-04-1622863166-keystrokes-dca-study@1-0efbe614-9ae6-4131-9192-4398359b4f5f
+  - user: 89335547
+    session: 2021-07-22-1627003020-keystrokes-dca-study@1-0efbe614-9ae6-4131-9192-4398359b4f5f
+  - user: 89335547
+    session: 2021-07-21-1626916256-keystrokes-dca-study@1-0efbe614-9ae6-4131-9192-4398359b4f5f
+  - user: 89335547
+    session: 2021-07-22-1627004019-keystrokes-dca-study@1-0efbe614-9ae6-4131-9192-4398359b4f5f
+  - user: 89335547
+    session: 2021-06-05-1622885888-keystrokes-dca-study@1-0efbe614-9ae6-4131-9192-4398359b4f5f
+  - user: 89335547
+    session: 2021-06-02-1622679967-keystrokes-dca-study@1-0efbe614-9ae6-4131-9192-4398359b4f5f
+  - user: 89335547
+    session: 2021-06-03-1622764398-keystrokes-dca-study@1-0efbe614-9ae6-4131-9192-4398359b4f5f
+  - user: 89335547
+    session: 2021-07-21-1626917264-keystrokes-dca-study@1-0efbe614-9ae6-4131-9192-4398359b4f5f
+  - user: 89335547
+    session: 2021-06-05-1622889105-keystrokes-dca-study@1-0efbe614-9ae6-4131-9192-4398359b4f5f
+  - user: 89335547
+    session: 2021-06-03-1622766673-keystrokes-dca-study@1-0efbe614-9ae6-4131-9192-4398359b4f5f
+  - user: 89335547
+    session: 2021-06-04-1622861066-keystrokes-dca-study@1-0efbe614-9ae6-4131-9192-4398359b4f5f
+  - user: 89335547
+    session: 2021-07-22-1627001995-keystrokes-dca-study@1-0efbe614-9ae6-4131-9192-4398359b4f5f
+  - user: 89335547
+    session: 2021-06-05-1622884635-keystrokes-dca-study@1-0efbe614-9ae6-4131-9192-4398359b4f5f
+  - user: 89335547
+    session: 2021-07-21-1626915176-keystrokes-dca-study@1-0efbe614-9ae6-4131-9192-4398359b4f5f
+  val:
+  - user: 89335547
+    session: 2021-06-04-1622862148-keystrokes-dca-study@1-0efbe614-9ae6-4131-9192-4398359b4f5f
+  test:
+  - user: 89335547
+    session: 2021-06-02-1622682789-keystrokes-dca-study@1-0efbe614-9ae6-4131-9192-4398359b4f5f
+  root: ${hydra:runtime.cwd}/data
+to_tensor:
+  _target_: emg2qwerty.transforms.ToTensor
+  fields:
+  - emg_left
+  - emg_right
+band_rotation:
+  _target_: emg2qwerty.transforms.ForEach
+  transform:
+    _target_: emg2qwerty.transforms.RandomBandRotation
+    offsets:
+    - -1
+    - 0
+    - 1
+temporal_jitter:
+  _target_: emg2qwerty.transforms.TemporalAlignmentJitter
+  max_offset: 120
+logspec:
+  _target_: emg2qwerty.transforms.LogSpectrogram
+  n_fft: 64
+  hop_length: 16
+specaug:
+  _target_: emg2qwerty.transforms.SpecAugment
+  n_time_masks: 3
+  time_mask_param: 25
+  n_freq_masks: 2
+  freq_mask_param: 4
+bandpass:
+  _target_: emg2qwerty.transforms.BandpassFilter
+  lowcut: 20.0
+  highcut: 500.0
+notch:
+  _target_: emg2qwerty.transforms.NotchFilter
+  notch_freq: 50.0
+  Q: 10.0
+z_score:
+  _target_: emg2qwerty.transforms.ZScoreNormalize
+additive_noise:
+  _target_: emg2qwerty.transforms.AdaptiveGaussianNoise
+  noise_ratio: 0.05
+transforms:
+  train:
+  - ${to_tensor}
+  - ${band_rotation}
+  - ${temporal_jitter}
+  - ${logspec}
+  - ${specaug}
+  val:
+  - ${to_tensor}
+  - ${logspec}
+  test: ${transforms.val}
+module:
+  _target_: emg2qwerty.lightning.TDSConvCTCModule
+  in_features: 528
+  mlp_features:
+  - 384
+  block_channels:
+  - 24
+  - 24
+  - 24
+  - 24
+  kernel_width: 32
+datamodule:
+  _target_: emg2qwerty.lightning.WindowedEMGDataModule
+  window_length: 8000
+  padding:
+  - 1800
+  - 200
+optimizer:
+  _target_: torch.optim.Adam
+  lr: 0.001
+lr_scheduler:
+  scheduler:
+    _target_: pl_bolts.optimizers.lr_scheduler.LinearWarmupCosineAnnealingLR
+    warmup_epochs: 10
+    max_epochs: ${trainer.max_epochs}
+    warmup_start_lr: 1.0e-08
+    eta_min: 1.0e-06
+  interval: epoch
+decoder:
+  _target_: emg2qwerty.decoder.CTCGreedyDecoder
+seed: 1501
+batch_size: 16
+num_workers: 2
+train: false
+checkpoint: result_logs/baseline-training/epoch73_step17760.ckpt
+monitor_metric: val/CER
+monitor_mode: min
+trainer:
+  accelerator: gpu
+  devices: 1
+  num_nodes: 1
+  max_epochs: 100
+  default_root_dir: ${hydra:runtime.output_dir}
+callbacks:
+- _target_: pytorch_lightning.callbacks.LearningRateMonitor
+- _target_: pytorch_lightning.callbacks.ModelCheckpoint
+  dirpath: ${hydra:runtime.output_dir}/checkpoints
+  monitor: ${monitor_metric}
+  mode: ${monitor_mode}
+  save_last: true
+  verbose: true
+
+[2025-03-12 22:16:52,137][__main__][INFO] - Instantiating LightningModule {'_target_': 'emg2qwerty.lightning.TDSConvCTCModule', 'in_features': 528, 'mlp_features': [384], 'block_channels': [24, 24, 24, 24], 'kernel_width': 32}
+[2025-03-12 22:16:52,217][__main__][INFO] - Loading module from checkpoint result_logs/baseline-training/epoch73_step17760.ckpt
+[2025-03-12 22:16:52,314][__main__][INFO] - Instantiating LightningDataModule {'_target_': 'emg2qwerty.lightning.WindowedEMGDataModule', 'window_length': 8000, 'padding': [1800, 200]}
+Validation: 0it [00:00, ?it/s]Validation:   0%|          | 0/14 [00:00<?, ?it/s]Validation DataLoader 0:   0%|          | 0/14 [00:00<?, ?it/s]Validation DataLoader 0:   7%|▋         | 1/14 [00:00<00:08,  1.56it/s]Validation DataLoader 0:  14%|█▍        | 2/14 [00:00<00:04,  2.76it/s]Validation DataLoader 0:  21%|██▏       | 3/14 [00:00<00:03,  3.23it/s]Validation DataLoader 0:  29%|██▊       | 4/14 [00:01<00:02,  3.90it/s]Validation DataLoader 0:  36%|███▌      | 5/14 [00:01<00:02,  4.06it/s]Validation DataLoader 0:  43%|████▎     | 6/14 [00:01<00:01,  4.51it/s]Validation DataLoader 0:  50%|█████     | 7/14 [00:01<00:01,  4.57it/s]Validation DataLoader 0:  57%|█████▋    | 8/14 [00:01<00:01,  4.89it/s]Validation DataLoader 0:  64%|██████▍   | 9/14 [00:01<00:01,  4.90it/s]Validation DataLoader 0:  71%|███████▏  | 10/14 [00:01<00:00,  5.17it/s]Validation DataLoader 0:  79%|███████▊  | 11/14 [00:02<00:00,  5.16it/s]Validation DataLoader 0:  86%|████████▌ | 12/14 [00:02<00:00,  5.38it/s]Validation DataLoader 0:  93%|█████████▎| 13/14 [00:02<00:00,  5.39it/s]Validation DataLoader 0: 100%|██████████| 14/14 [00:02<00:00,  5.63it/s]Validation DataLoader 0: 100%|██████████| 14/14 [00:02<00:00,  5.62it/s]
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+     Validate metric           DataLoader 0
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+         val/CER             19.78289794921875
+         val/DER            1.7058041095733643
+         val/IER             4.541426658630371
+         val/SER            13.535666465759277
+        val/loss            0.9744623303413391
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Testing: 0it [00:00, ?it/s]Testing:   0%|          | 0/1 [00:00<?, ?it/s]Testing DataLoader 0:   0%|          | 0/1 [00:00<?, ?it/s]Testing DataLoader 0: 100%|██████████| 1/1 [00:06<00:00,  6.85s/it]Testing DataLoader 0: 100%|██████████| 1/1 [00:06<00:00,  6.89s/it]
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+       Test metric             DataLoader 0
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+        test/CER             21.85000991821289
+        test/DER             2.053166151046753
+        test/IER             4.127944469451904
+        test/SER            15.668899536132812
+        test/loss           0.9977063536643982
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+{'val_metrics': [{'val/loss': 0.9744623303413391,
+                  'val/CER': 19.78289794921875,
+                  'val/IER': 4.541426658630371,
+                  'val/DER': 1.7058041095733643,
+                  'val/SER': 13.535666465759277}],
+ 'test_metrics': [{'test/loss': 0.9977063536643982,
+                   'test/CER': 21.85000991821289,
+                   'test/IER': 4.127944469451904,
+                   'test/DER': 2.053166151046753,
+                   'test/SER': 15.668899536132812}],
+ 'best_checkpoint': ''}
+submitit INFO (2025-03-12 22:17:10,003) - Job completed successfully
+[2025-03-12 22:17:10,003][submitit][INFO] - Job completed successfully
+submitit INFO (2025-03-12 22:17:10,011) - Exiting after successful completion
+[2025-03-12 22:17:10,011][submitit][INFO] - Exiting after successful completion

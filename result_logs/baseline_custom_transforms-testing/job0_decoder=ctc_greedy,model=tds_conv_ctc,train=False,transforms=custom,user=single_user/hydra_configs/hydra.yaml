@@ -124,6 +124,7 @@ hydra:
     task:
     - user=single_user
     - model=tds_conv_ctc
+    - checkpoint=result_logs/baseline_custom_transforms-training/epoch37_step9120.ckpt
     - transforms=custom
     - train=False
     - trainer.accelerator=gpu
@@ -132,7 +133,7 @@ hydra:
     name: emg2qwerty
     chdir: null
     override_dirname: decoder=ctc_greedy,model=tds_conv_ctc,train=False,transforms=custom,user=single_user
-    id: '7817'
+    id: '15421'
     num: 0
     config_name: base
     env_set: {}
@@ -159,7 +160,7 @@ hydra:
     - path: ''
       schema: structured
       provider: schema
-    output_dir: /home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/20-16-02/job0_decoder=ctc_greedy,model=tds_conv_ctc,train=False,transforms=custom,user=single_user
+    output_dir: /home/eesoymilk/src/c247-nndl-project/logs/2025-03-12/22-18-10/job0_decoder=ctc_greedy,model=tds_conv_ctc,train=False,transforms=custom,user=single_user
     choices:
       cluster: local
       decoder: ctc_greedy

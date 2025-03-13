@@ -347,11 +347,15 @@ class LSTMGRUCTCModule(BaseCTCModule):
         optimizer: DictConfig,
         lr_scheduler: DictConfig,
         decoder: DictConfig,
+        lstm_dropout: float = 0.0,
+        between_dropout: float = 0.0,
+        gru_dropout: float = 0.0,
+        gru_bidirectional: bool = False,
     ) -> None:
         super().__init__(optimizer, lr_scheduler, decoder)
 
         in_features = self.ELECTRODE_CHANNELS * self.FREQUENCY_BINS
-        num_features = self.NUM_BANDS * gru_hidden_size
+        num_features = self.NUM_BANDS * gru_hidden_size * (1 + gru_bidirectional)
 
         # Model
         # inputs: (T, N, bands=2, electrode_channels=16, freq)
@@ -363,8 +367,12 @@ class LSTMGRUCTCModule(BaseCTCModule):
                 in_features=in_features,
                 lstm_layers=lstm_layers,
                 lstm_hidden_size=lstm_hidden_size,
+                lstm_dropout=lstm_dropout,
+                between_dropout=between_dropout,
                 gru_layers=gru_layers,
                 gru_hidden_size=gru_hidden_size,
+                gru_bidirectional=gru_bidirectional,
+                gru_dropout=gru_dropout,
                 num_bands=self.NUM_BANDS,
             ),
             # (T, N, num_features)

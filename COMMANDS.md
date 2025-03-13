@@ -14,6 +14,7 @@ python -m emg2qwerty.train \
     trainer.devices=1 \
     --multirun
 ```
+
 ### Testing
 
 ```bash
@@ -41,6 +42,7 @@ python -m emg2qwerty.train \
     trainer.devices=1 \
     --multirun
 ```
+
 ### Testing
 
 ```bash
@@ -75,7 +77,7 @@ python -m emg2qwerty.train \
 python -m emg2qwerty.train \
   user=single_user \
   model=tcn_ctc \
-  checkpoint="./path/to/ckpt" \
+  checkpoint="result_logs/tcn-training/epoch99_step24000.ckpt" \
   train=False \
   trainer.accelerator=gpu \
   decoder=ctc_greedy \

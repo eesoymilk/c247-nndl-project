@@ -22,6 +22,7 @@ from emg2qwerty.charset import charset
 from emg2qwerty.data import LabelData, WindowedEMGDataset
 from emg2qwerty.metrics import CharacterErrorRates
 from emg2qwerty.modules import (
+    LSTMGRU,
     MultiBandLSTMGRU,
     MultiBandRotationInvariantMLP,
     MultiBandRotationInvariantTCN,
@@ -134,7 +135,7 @@ class WindowedEMGDataModule(pl.LightningDataModule):
             shuffle=False,
             num_workers=self.num_workers,
             collate_fn=WindowedEMGDataset.collate,
-            pin_memory=True,
+            # pin_memory=True,  # Avoid pinning for large datasets
             persistent_workers=True,
         )
 
@@ -391,11 +392,16 @@ class HybridCTCModule(BaseCTCModule):
         optimizer: DictConfig,
         lr_scheduler: DictConfig,
         decoder: DictConfig,
+        lstm_dropout: float = 0.0,
+        between_dropout: float = 0.0,
+        gru_dropout: float = 0.0,
+        gru_bidirectional: bool = False,
     ) -> None:
         super().__init__(optimizer, lr_scheduler, decoder)
 
         in_channels = self.ELECTRODE_CHANNELS * self.FREQUENCY_BINS
-        num_features = self.NUM_BANDS * num_filters[-1]
+        lstm_in_features = self.NUM_BANDS * num_filters[-1]
+        linear_in_features = gru_hidden_size * (1 + gru_bidirectional)
 
         # Model
         # inputs: (T, N, bands=2, electrode_channels=16, freq)
@@ -410,13 +416,21 @@ class HybridCTCModule(BaseCTCModule):
                 dilation_base=dilation_base,
                 num_bands=self.NUM_BANDS,
             ),
-            # (T, N, num_features)
+            # (T, N, lstm_in_features)
             nn.Flatten(start_dim=2),
-            # (T, N, lstm_hidden_size)
-            nn.LSTM(num_features, lstm_hidden_size, num_layers=lstm_layers),
-            # (T, N, gru_hidden_size)
-            nn.GRU(lstm_hidden_size, gru_hidden_size, num_layers=gru_layers),
+            # (T, N, linear_in_features)
+            LSTMGRU(
+                in_features=lstm_in_features,
+                lstm_layers=lstm_layers,
+                lstm_hidden_size=lstm_hidden_size,
+                lstm_dropout=lstm_dropout,
+                between_dropout=between_dropout,
+                gru_layers=gru_layers,
+                gru_hidden_size=gru_hidden_size,
+                gru_dropout=gru_dropout,
+                gru_bidirectional=gru_bidirectional,
+            ),
             # (T, N, num_classes)
-            nn.Linear(gru_hidden_size, charset().num_classes),
+            nn.Linear(linear_in_features, charset().num_classes),
             nn.LogSoftmax(dim=-1),
         )

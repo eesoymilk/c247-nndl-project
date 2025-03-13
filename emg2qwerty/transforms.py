@@ -246,17 +246,18 @@ class SpecAugment:
         # (..., C, freq, T) -> (T, ..., C, freq)
         return x.movedim(-1, 0)
 
+
 @dataclass
 class BandpassFilter:
     """Applies a Butterworth bandpass filter to EMG signals.
-    
+
     Typical EMG signals are in the range of 20-150Hz, so we use a bandpass filter
     to remove noise outside this range.
 
     Args:
         lowcut (float): Lower cutoff frequency of the bandpass filter. (default: 20.0)
         highcut (float): Upper cutoff frequency of the bandpass filter. (default: 150.0)
-        fs (int): Sampling rate of the EMG signal. 
+        fs (int): Sampling rate of the EMG signal.
         order (int): Order of the Butterworth filter.
     """
 
@@ -299,7 +300,9 @@ class NotchFilter:
         notch = self.notch_freq / nyquist
         lower_freq = max(0.001, notch - 1 / self.Q)
         upper_freq = notch + 1 / self.Q
-        print(f"Notch frequency: {self.notch_freq}, Nyquist: {nyquist}, Lower freq: {lower_freq}, Upper freq: {upper_freq}")
+        print(
+            f"Notch frequency: {self.notch_freq}, Nyquist: {nyquist}, Lower freq: {lower_freq}, Upper freq: {upper_freq}"
+        )
         self.b, self.a = butter(2, [lower_freq, upper_freq], btype="bandstop")
 
     def __call__(self, tensor: torch.Tensor) -> torch.Tensor:
@@ -328,14 +331,4 @@ class AdaptiveGaussianNoise:
         noise = torch.randn_like(tensor) * (std * self.noise_ratio)
         return tensor + noise
 
-    
-# @dataclass
-# class RandomTimeWarping:
-#     """Randomly warps the time dimension of the input tensor."""
 
-#     def __call__(self, tensor: torch.Tensor, max_warp: float = 0.2) -> torch.Tensor:
-#         time_length = tensor.shape[0]
-#         warp_factor = 1 + np.random.uniform(-max_warp, max_warp)
-#         new_time_length = int(time_length * warp_factor)
-#         new_tensor = torch.nn.functional.interpolate(tensor.unsqueeze(0).unsqueeze(0), size=new_time_length, mode='linear').squeeze()
-#         return new_tensor

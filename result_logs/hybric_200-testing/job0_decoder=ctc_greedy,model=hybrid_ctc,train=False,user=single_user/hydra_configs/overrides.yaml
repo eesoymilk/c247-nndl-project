@@ -1,0 +1,6 @@
+- user=single_user
+- model=hybrid_ctc
+- checkpoint=result_logs/hybric_200-training/epoch99_step24000.ckpt
+- train=False
+- trainer.accelerator=gpu
+- decoder=ctc_greedy

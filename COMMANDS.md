@@ -10,6 +10,7 @@
 python -m emg2qwerty.train \
     user=single_user \
     model=tds_conv_ctc \
+    checkpoint="result_logs/baseline-training/epoch73_step17760.ckpt" \
     trainer.accelerator=gpu \
     trainer.devices=1 \
     --multirun
@@ -21,7 +22,7 @@ python -m emg2qwerty.train \
 python -m emg2qwerty.train \
     user=single_user \
     model=tds_conv_ctc \
-    checkpoint="result_logs/baseline-training/epoch73_step17760.ckpt" \
+    checkpoint="result_logs/baseline_200-training/epoch98_step23760.ckpt" \
     train=False \
     trainer.accelerator=gpu \
     decoder=ctc_greedy \
@@ -66,6 +67,7 @@ python -m emg2qwerty.train \
 python -m emg2qwerty.train \
   user=single_user \
   model=tcn_ctc \
+  checkpoint="result_logs/tcn-training/epoch99_step24000.ckpt" \
   trainer.accelerator=gpu \
   trainer.devices=1 \
   --multirun
@@ -77,7 +79,7 @@ python -m emg2qwerty.train \
 python -m emg2qwerty.train \
   user=single_user \
   model=tcn_ctc \
-  checkpoint="result_logs/tcn-training/epoch99_step24000.ckpt" \
+  checkpoint="result_logs/tcn_200-training/epoch0_step240.ckpt" \
   train=False \
   trainer.accelerator=gpu \
   decoder=ctc_greedy \

@@ -47,8 +47,8 @@ transforms:
     - ${to_tensor}
     - ${bandpass}
     - ${notch}
-    - ${z_score}
     - ${additive_noise}
+    - ${z_score}
     - ${band_rotation}
     - ${temporal_jitter}
     - ${logspec}
@@ -56,6 +56,9 @@ transforms:
 
   val:
     - ${to_tensor}
+    - ${bandpass}
+    - ${notch}
+    - ${z_score}
     - ${logspec}
 
   test: ${transforms.val}

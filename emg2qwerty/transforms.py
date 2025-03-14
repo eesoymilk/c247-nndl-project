@@ -300,9 +300,6 @@ class NotchFilter:
         notch = self.notch_freq / nyquist
         lower_freq = max(0.001, notch - 1 / self.Q)
         upper_freq = notch + 1 / self.Q
-        print(
-            f"Notch frequency: {self.notch_freq}, Nyquist: {nyquist}, Lower freq: {lower_freq}, Upper freq: {upper_freq}"
-        )
         self.b, self.a = butter(2, [lower_freq, upper_freq], btype="bandstop")
 
     def __call__(self, tensor: torch.Tensor) -> torch.Tensor:

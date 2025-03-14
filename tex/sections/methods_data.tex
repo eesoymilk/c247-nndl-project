@@ -1,1 +1,48 @@
 \subsection{Data Preprocessing}
+
+We primarily explored three forms of preprocessing: combination filtering (bandpass and notch), 
+adaptive Gaussian noise, and z-score normalization.
+They were tested separately on the baseline model to evaluate their effects on model performance.
+
+For tests involving filters, the temporal data was successively passed through a Butterworth bandpass filter and a notch filter (Table~\ref{filters}).
+The sampling frequency for both filters was set to 2000 Hz, which is the same as the sampling frequency of the original data,
+so the filter design was based on the Nyquist frequency of 1000 Hz.
+Both filters were designed using forward-backward filtering to avoid phase distortion.
+We set the order of the bandpass filter to 4 and the cutoff frequencies to 0.5 Hz and 500 Hz, respectively.
+Then, we applied another 2-order notch filter.
+The Q factor of the notch filter was set to 30 and the middle frequency was set to 50 Hz, 
+which are common values in this context. This configuration ensures a narrow bandwidth to effectively remove the power line interference.
+Thus, we applied a relatively steep filter to remove signal components outside the range of 20-500 Hz 
+while also eliminating power line interference at 50 Hz.
+
+\begin{table}
+    \caption{Filters}
+    \label{filters}
+    \centering
+    \begin{tabular}{lll}
+      \toprule
+      \cmidrule(r){1-2}
+      Type of Filter     & Frequency Range (Hz)     & Reference \\
+      \midrule
+      $4^{th}$ Butterworth bandpass filter & 20 - 500 Hz  &  ~[1], ~[3]    \\
+      $2^{nd}$ Butterworth notch filter    & 50 Hz        &  ~[1], ~[2]    \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+  
+
+For the adaptive Gaussian noise, we added noise to the data based on the standard deviation of the original data.
+Specifically, we set the noise ratio to 0.05, which is a relatively small value, to ensure that the noise does not overwhelm the original signal.
+For a given sample, we generated Gaussian noise with a mean of 0 and a standard deviation of 0.05 times the standard deviation of the original data
+along the time axis to add to the diversity of the data.
+
+For normalization, we applied z-score normalization along the time axis to 
+standardize the data by subtracting the mean and scaling it to unit variance.
+
+These steps were arranged in the order of filtering, noise addition, and normalization.
+This is because general noise and artifacts do not carry useful information, so they are removed first.
+The noise addition is adaptive to the intensity of original data, so it is better to add it before normalization.
+Finally, the normalization step is applied to ensure that the data is standardized and ready for model training.
+After these steps, we implemented the random band rotation, temporal alignment jitter, 
+log spectrogram and specaugment as in the baseline model.
+It is worth noting that the filtering and normalization should also be applied to the validation and test sets to ensure consistency in the data preprocessing pipeline.

@@ -1,0 +1,5 @@
+- user=single_user
+- model=tcn_ctc
+- checkpoint=result_logs/tcn-training/epoch99_step24000.ckpt
+- trainer.accelerator=gpu
+- trainer.devices=1

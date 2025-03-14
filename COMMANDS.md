@@ -93,6 +93,7 @@ python -m emg2qwerty.train \
 python -m emg2qwerty.train \
   user=single_user \
   model=lstm_gru_ctc \
+  checkpoint="result_logs/lstm_gru-training/epoch95_step23040.ckpt" \
   trainer.accelerator=gpu \
   trainer.devices=1 \
   --multirun
@@ -104,7 +105,7 @@ python -m emg2qwerty.train \
 python -m emg2qwerty.train \
   user=single_user \
   model=lstm_gru_ctc \
-  checkpoint="./path/to/ckpt" \
+  checkpoint="result_logs/lstm_gru_200-training/epoch93_step22560.ckpt" \
   train=False \
   trainer.accelerator=gpu \
   decoder=ctc_greedy \
@@ -133,7 +134,7 @@ python -m emg2qwerty.train \
 python -m emg2qwerty.train \
   user=single_user \
   model=hybrid_ctc \
-  checkpoint="./path/to/ckpt" \
+  checkpoint="result_logs/hybric_200-training/epoch99_step24000.ckpt" \
   train=False \
   trainer.accelerator=gpu \
   decoder=ctc_greedy \

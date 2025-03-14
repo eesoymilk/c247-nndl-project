@@ -1,1 +1,65 @@
 \subsection{Architectures}
+
+In this section, we detail the four architectures employed for sEMG-based keystroke recognition, each of which outputs frame-level character probabilities for Connectionist Temporal Classification (CTC). All architectures take the same preprocessed inputs—two sEMG bands (left and right wrist), each with 16 electrode channels, transformed into spectrogram features—and produce per-timestep logits over the typing vocabulary plus a CTC blank token.
+
+\subsubsection{Baseline: TDSConv}
+
+We adopt the TDSConvCTCModule described in prior work as our baseline. Here, the model applies:
+
+\begin{itemize} 
+    \item\textbf{Spectrogram Normalization}: normalize the amplitude distribution across channels.
+
+    \item\textbf{Multi-Band Rotation Invariant MLP}: Processes each band (left, right) independently, applying a small multi-layer perceptron invariant to electrode-channel shifts.
+
+    \item\textbf{TDS Convolutional Encoder}: It is composed of Time-Depth Separable (TDS) convolutional blocks [Hannun et al., 2019], each featuring a temporal 2D convolution (over time × features) and a pointwise fully connected residual layer.
+    \item\textbf{Linear Layer}: A final linear layer maps the hidden representations to the desired output dimension, followed by a log-softmax activation.
+\end{itemize}
+
+We include this TDSConv setup for comparison with our proposed alternatives, but concentrate primarily on the latter approaches.
+
+\subsubsection{TCN-Based Architecture}
+
+Our first custom model, TCNCTCModule, replaces TDSConv blocks with a Temporal Convolutional Network (TCN):
+
+\begin{itemize}
+    \item\textbf{Spectrogram Normalization}: Normalize the inputs as before.
+
+    \item\textbf{Multi-Band Rotational Invariant TCN}: Input spectrograms are split by band, with each band processed by a rotation-invariant TCN block. Each block rotates electrode channels by various offsets and takes a mean or max over these rotations to ensure invariance to minor electrode shift.
+
+    \item\textbf{Dilated Convolutions}: The TCN employs increasing dilation factors to capture long-range dependencies in the time dimension.
+    
+    \item\textbf{Flatten + Linear}: After TCN feature extraction, we flatten the band features per timestep and apply a final linear projection to the character classes, followed by log-softmax.
+\end{itemize}
+
+Unlike the baseline’s TDS convolution, the TCN design uses 1D convolutions over time with flexible receptive fields, potentially offering more direct parallelization and multi-scale temporal modeling.
+
+\subsubsection{LSTM+GRU Model}
+
+Our second custom model, LSTMGRUCTCModule, removes the convolutional encoder entirely and relies on recurrent networks to handle all temporal structure:
+\begin{itemize}
+    \item\textbf{Spectrogram Normalization}: Normalize the inputs as before.
+
+    \item \textbf{Multi-Band LSTM + GRU}: Each sEMG band is flattened into (electrodes × freq) features and fed into a small LSTM, optionally followed by dropout, and then a GRU. We do this per band, outputting band-specific hidden states.
+
+    \item \textbf{Flatten + Linear}: The time dimension remains intact, so we simply flatten across bands and feed these hidden states into a final linear layer. A log-softmax produces per-timestep character logits.
+\end{itemize}
+
+By combining LSTM and GRU, we aim to capture nuanced temporal dependencies without any convolution, thus contrasting with the TCN and TDSConv approaches.
+
+\subsubsection{Hybrid TCN + LSTM + GRU}
+
+Lastly, we propose HybridCTCModule, which fuses the TCN and LSTM+GRU concepts:
+
+\begin{enumerate}
+    \item\textbf{Spectrogram Normalization}: Normalize the inputs as before.
+
+    \item\textbf{Multi-Band Rotation Invariant TCN} for local feature extraction. Each frequency band is handled separately, capturing mid-range temporal dynamics via dilated convolutions.
+
+    \item\textbf{Flatten} merges the per-band TCN outputs into a sequence representation.
+
+    \item\textbf{LSTM + GRU} on top of the TCN outputs to further refine temporal context at longer timescales.
+
+    \item\textbf{Linear} maps the resultant hidden states to output classes, with a log-softmax.
+\end{enumerate}
+
+This hybrid approach integrates convolutional parallelism with recurrent long-term memory, potentially extracting richer spatiotemporal patterns than either method in isolation.

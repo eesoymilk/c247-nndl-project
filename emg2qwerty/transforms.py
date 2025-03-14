@@ -12,6 +12,8 @@ import numpy as np
 import torch
 import torchaudio
 
+from scipy.signal import butter, filtfilt
+
 
 TTransformIn = TypeVar("TTransformIn")
 TTransformOut = TypeVar("TTransformOut")
@@ -243,3 +245,90 @@ class SpecAugment:
 
         # (..., C, freq, T) -> (T, ..., C, freq)
         return x.movedim(-1, 0)
+
+
+@dataclass
+class BandpassFilter:
+    """Applies a Butterworth bandpass filter to EMG signals.
+
+    Typical EMG signals are in the range of 20-150Hz, so we use a bandpass filter
+    to remove noise outside this range.
+
+    Args:
+        lowcut (float): Lower cutoff frequency of the bandpass filter. (default: 20.0)
+        highcut (float): Upper cutoff frequency of the bandpass filter. (default: 150.0)
+        fs (int): Sampling rate of the EMG signal.
+        order (int): Order of the Butterworth filter.
+    """
+
+    lowcut: float = 20.0
+    highcut: float = 150.0
+    fs: int = 2000  # Sampling rate
+    order: int = 4  # Order of the Butterworth filter
+
+    def __post_init__(self):
+        nyquist = 0.5 * self.fs  # Nyquist frequency
+        low = self.lowcut / nyquist
+        high = self.highcut / nyquist
+        self.b, self.a = butter(self.order, [low, high], btype="band")
+
+    def __call__(self, tensor: torch.Tensor) -> torch.Tensor:
+        """Filter the input tensor along the first axis (time)"""
+        filtered = filtfilt(self.b, self.a, tensor.numpy(), axis=0)
+        filtered = filtered.copy()
+        return torch.tensor(filtered, dtype=torch.float32)
+
+@dataclass
+class NotchFilter:
+    """Applies a Butterworth notch filter to EMG signals.
+    
+    Typical EMG signals have a 50Hz noise due to electrical interference, so we use a notch filter
+    to remove this noise.
+
+    Args:
+        notch_freq (float): Frequency of the notch filter. (default: 50.0)
+        fs (int): Sampling rate of the EMG signal.
+        Q (float): Q factor of the notch filter. (default: 30.0)
+    """
+
+    notch_freq: float = 50.0
+    fs: int = 2000  # Sampling rate
+    Q: float = 30.0  # Q factor of the notch filter
+
+    def __post_init__(self):
+        nyquist = 0.5 * self.fs  # Nyquist frequency
+        notch = self.notch_freq / nyquist
+        lower_freq = max(0.001, notch - 1 / self.Q)
+        upper_freq = notch + 1 / self.Q
+        print(
+            f"Notch frequency: {self.notch_freq}, Nyquist: {nyquist}, Lower freq: {lower_freq}, Upper freq: {upper_freq}"
+        )
+        self.b, self.a = butter(2, [lower_freq, upper_freq], btype="bandstop")
+
+    def __call__(self, tensor: torch.Tensor) -> torch.Tensor:
+        """Filter the input tensor along the first axis (time)"""
+        filtered = filtfilt(self.b, self.a, tensor.numpy(), axis=0)
+        filtered = filtered.copy()
+        return torch.tensor(filtered, dtype=torch.float32)
+
+@dataclass
+class ZScoreNormalize:
+    """Performs Z-score normalization on the EMG signals."""
+
+    def __call__(self, tensor: torch.Tensor) -> torch.Tensor:
+        mean = tensor.mean(dim=0, keepdim=True)
+        std = tensor.std(dim=0, keepdim=True)
+        return (tensor - mean) / (std + 1e-6)   # Add epsilon to avoid division by zero
+    
+@dataclass
+class AdaptiveGaussianNoise:
+    """Adds Gaussian noise to the input tensor with adaptive noise intensity."""
+
+    noise_ratio: float = 0.05  
+
+    def __call__(self, tensor: torch.Tensor) -> torch.Tensor:
+        std = tensor.std(dim=0, keepdim=True) 
+        noise = torch.randn_like(tensor) * (std * self.noise_ratio)
+        return tensor + noise
+
+

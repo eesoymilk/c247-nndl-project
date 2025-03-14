@@ -1,0 +1,4 @@
+- user=single_user
+- model=tcn_ctc
+- trainer.accelerator=gpu
+- trainer.devices=1

@@ -1,0 +1,6 @@
+- user=single_user
+- model=tds_conv_ctc
+- checkpoint=result_logs/baseline_200-training/epoch98_step23760.ckpt
+- train=False
+- trainer.accelerator=gpu
+- decoder=ctc_greedy

@@ -1,0 +1,5 @@
+- user=single_user
+- model=tds_conv_ctc
+- checkpoint=result_logs/baseline-training/epoch73_step17760.ckpt
+- trainer.accelerator=gpu
+- trainer.devices=1

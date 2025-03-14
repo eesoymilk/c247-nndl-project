@@ -1,10 +1,13 @@
 # @package _global_
 module:
   _target_: emg2qwerty.lightning.LSTMGRUCTCModule
-  lstm_hidden_size: 256
-  lstm_layers: 3
-  gru_hidden_size: 256
-  gru_layers: 2
+  lstm_layers: 2
+  lstm_hidden_size: 192
+  lstm_dropout: 0.3
+  between_dropout: 0.3
+  gru_layers: 1
+  gru_hidden_size: 64
+  gru_bidirectional: True
 
 datamodule:
   _target_: emg2qwerty.lightning.WindowedEMGDataModule

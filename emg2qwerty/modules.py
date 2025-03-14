@@ -321,7 +321,7 @@ class RotationInvariantTCN(nn.Module):
 
             # Ensure proper padding
             theoretical_padding = (kernel_size - 1) * dilation / 2
-            padding = int(theoretical_padding)
+            padding: int | list[int] = int(theoretical_padding)
             if not theoretical_padding.is_integer():
                 padding = [padding, padding + 1]
 
@@ -455,6 +455,66 @@ class MultiBandRotationInvariantTCN(nn.Module):
         return torch.stack(band_outputs, dim=self.stack_dim)
 
 
+class LSTMGRU(nn.Module):
+    """A `torch.nn.Module` that applies a single layer of LSTM and GRU
+    over the input tensor.
+
+    Args:
+        in_features (int): Number of input features to the LSTM and GRU.
+        lstm_layers (int): Number of LSTM layers.
+        lstm_hidden_size (int): Number of features in the LSTM hidden state.
+        lstm_dropout (float): Dropout probability for the LSTM.
+        between_dropout (float): Dropout probability between LSTM and GRU.
+        gru_layers (int): Number of GRU layers.
+        gru_hidden_size (int): Number of features in the GRU hidden state.
+        gru_dropout (float): Dropout probability for the GRU.
+        num_bands (int): Number of frequency bands.
+    """
+
+    def __init__(
+        self,
+        in_features: int,
+        lstm_layers: int = 3,
+        lstm_hidden_size: int = 256,
+        lstm_dropout: float = 0.0,
+        between_dropout: float = 0.0,
+        gru_layers: int = 2,
+        gru_hidden_size: int = 256,
+        gru_dropout: float = 0.0,
+        gru_bidirectional: bool = False,
+        num_bands: int = 2,
+    ) -> None:
+        super().__init__()
+
+        self.num_bands = num_bands
+        self.lstm = nn.LSTM(
+            in_features, lstm_hidden_size, lstm_layers, dropout=lstm_dropout
+        )
+        self.dropout = nn.Dropout(between_dropout)
+        self.gru = nn.GRU(
+            lstm_hidden_size,
+            gru_hidden_size,
+            gru_layers,
+            dropout=gru_dropout,
+            bidirectional=gru_bidirectional,
+        )
+
+    def forward(self, inputs: torch.Tensor) -> torch.Tensor:
+        """
+        Forward pass for the LSTM-GRU module.
+
+        Args:
+            inputs (torch.Tensor): Shape (T, N, in_features)
+
+        Returns:
+            torch.Tensor: Shape (T, N, gru_hidden_size)
+        """
+        lstm_output, _ = self.lstm(inputs)
+        lstm_output = self.dropout(lstm_output)
+        gru_output, _ = self.gru(lstm_output)
+        return gru_output
+
+
 class MultiBandLSTMGRU(nn.Module):
     """A `torch.nn.Module` that applies a single layer of LSTM and GRU
     over the input tensor.
@@ -463,10 +523,12 @@ class MultiBandLSTMGRU(nn.Module):
         in_features (int): Number of input features to the LSTM and GRU.
         lstm_layers (int): Number of LSTM layers.
         lstm_hidden_size (int): Number of features in the LSTM hidden state.
+        lstm_dropout (float): Dropout probability for the LSTM.
+        between_dropout (float): Dropout probability between LSTM and GRU.
         gru_layers (int): Number of GRU layers.
         gru_hidden_size (int): Number of features in the GRU hidden state.
+        gru_dropout (float): Dropout probability for the GRU.
         num_bands (int): Number of frequency bands.
-        stack_dim (int): The Ddimension along which the left and right data
     """
 
     def __init__(
@@ -474,8 +536,12 @@ class MultiBandLSTMGRU(nn.Module):
         in_features: int,
         lstm_layers: int = 3,
         lstm_hidden_size: int = 256,
+        lstm_dropout: float = 0.1,
+        between_dropout: float = 0.1,
         gru_layers: int = 2,
         gru_hidden_size: int = 256,
+        gru_dropout: float = 0.1,
+        gru_bidirectional: bool = False,
         num_bands: int = 2,
     ) -> None:
         super().__init__()
@@ -483,9 +549,16 @@ class MultiBandLSTMGRU(nn.Module):
         self.num_bands = num_bands
         self.lstm_grus = nn.ModuleList(
             [
-                nn.Sequential(
-                    nn.LSTM(in_features, lstm_hidden_size, num_layers=lstm_layers),
-                    nn.GRU(lstm_hidden_size, gru_hidden_size, num_layers=gru_layers),
+                LSTMGRU(
+                    in_features=in_features,
+                    lstm_layers=lstm_layers,
+                    lstm_hidden_size=lstm_hidden_size,
+                    lstm_dropout=lstm_dropout,
+                    between_dropout=between_dropout,
+                    gru_layers=gru_layers,
+                    gru_hidden_size=gru_hidden_size,
+                    gru_dropout=gru_dropout,
+                    gru_bidirectional=gru_bidirectional,
                 )
                 for _ in range(num_bands)
             ]
@@ -512,10 +585,9 @@ class MultiBandLSTMGRU(nn.Module):
         inputs_per_band = inputs.unbind(2)
 
         # Shape for each: (T, N, gru_hidden_size)
-        outputs_per_band = []
-        for lstm_gru, _inputs in zip(self.lstm_grus, inputs_per_band):
-            lstm_output, _ = lstm_gru[0](_inputs)
-            gru_output, _ = lstm_gru[1](lstm_output)
-            outputs_per_band.append(gru_output)
+        outputs_per_band = [
+            lstm_gru(_input)
+            for lstm_gru, _input in zip(self.lstm_grus, inputs_per_band)
+        ]
 
         return torch.stack(outputs_per_band, dim=2)

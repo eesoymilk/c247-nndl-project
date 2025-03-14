@@ -1,2 +1,28 @@
 
 \section{Introduction}
+Our approach is primarily motivated by the discussions of recurrent neural networks (RNNs) and related architectures, 
+including long short-term memory (LSTM) networks and gated recurrent units (GRUs), 
+which are widely used for sequential data like sEMG signals. 
+We further explore a hybrid model that integrates temporal convolutional networks (TCNs) with LSTM and GRU. 
+Additionally, we investigate the impact of data quality on model performance by employing various preprocessing techniques 
+and evaluating their effects on model accuracy and robustness.
+
+\subsection{Preprocessing Motivations}
+Based on empirical observations and prior research, 
+we tested three preprocessing techniques to evaluate their effects on model performance.
+
+First, considering that sEMG signals primarily fall within the frequency range of 0--500 Hz, 
+we applied a bandpass filter to retain relevant signal components while eliminating out-of-band noise. 
+Additionally, a notch filter was implemented to remove power line interference at 50 Hz. 
+The combination of these two filters ensures that the acquired signals are free from common noise artifacts.
+
+Second, we applied adaptive Gaussian noise for data augmentation. 
+This technique enhances data diversity and improves the model's robustness to noise. 
+Instead of introducing a fixed amount of noise, we adaptively adjust the noise level 
+based on the standard deviation of the original data. 
+This ensures that the introduced noise is proportional to the signal amplitude, 
+so that the noise will not overwhelm some of the data, preserving the underlying signal characteristics.
+
+Finally, we applied z-score normalization to standardize the data by removing the mean and scaling it to unit variance. 
+This step enhances model stability by ensuring consistent feature scaling across different samples.
+

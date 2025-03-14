@@ -1,0 +1,4 @@
+- user=single_user
+- model=lstm_gru_ctc
+- trainer.accelerator=gpu
+- trainer.devices=1

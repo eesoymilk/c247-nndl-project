@@ -20,21 +20,6 @@ We include this TDSConv setup for comparison with our proposed alternatives, but
 
 \subsubsection{TCN-Based Architecture}
 
-\begin{table}
-    \caption{Hyperparameters for TCNCTCModule}
-    \label{tab:tcn_ctc}
-    \centering
-    \begin{tabular}{ll}
-      \toprule
-      \textbf{Hyperparameter} & \textbf{Value} \\
-      \midrule
-      num\_filters & [128, 128, 128, 256] \\
-      kernel\_size & 32 \\
-      dilation\_base & 3 \\
-      \bottomrule
-    \end{tabular}
-    \label{tab:tcn_hyperparameters}
-\end{table}
 
 Our first custom model, TCNCTCModule (with hyperparameters in Table~\ref{tab:tcn_hyperparameters}), replaces TDSConv blocks with a Temporal Convolutional Network (TCN):
 
@@ -52,27 +37,6 @@ Unlike the baseline’s TDS convolution, the TCN design uses 1D convolutions ove
 
 \subsubsection{LSTM+GRU Model}
 
-\begin{table}
-    \caption{Hyperparameters for LSTMGRUCTCModule}
-    \label{tab:lstm_gru_ctc}
-    \centering
-    \begin{tabular}{ll}
-      \toprule
-      \textbf{Hyperparameter} & \textbf{Value} \\
-      \midrule
-      lstm\_layers & 2 \\
-      lstm\_hidden\_size & 192 \\
-      lstm\_dropout & 0.3 \\
-      between\_dropout & 0.3 \\
-      gru\_layers & 1 \\
-      gru\_hidden\_size & 64 \\
-      gru\_bidirectional & true \\
-      \bottomrule
-    \end{tabular}
-    \label{tab:lstm_gru_hyperparameters}
-\end{table}
-
-
 Our second custom model, LSTMGRUCTCModule (with hyperparameters in Table~\ref{tab:lstm_gru_hyperparameters}), removes the convolutional encoder entirely and relies on recurrent networks to handle all temporal structure:
 \begin{enumerate}
     \item\textbf{Spectrogram Normalization}: Normalize the inputs as before.
@@ -86,28 +50,6 @@ By combining LSTM and GRU, we aim to capture nuanced temporal dependencies witho
 
 \subsubsection{Hybrid TCN + LSTM + GRU}
 
-\begin{table}
-    \caption{Hyperparameters for HybridCTCModule}
-    \label{tab:hybrid_ctc}
-    \centering
-    \begin{tabular}{ll}
-      \toprule
-      \textbf{Hyperparameter} & \textbf{Value} \\
-      \midrule
-      num\_filters & [128, 128, 128, 256] \\
-      kernel\_size & 32 \\
-      dilation\_base & 3 \\
-      lstm\_layers & 2 \\
-      lstm\_hidden\_size & 192 \\
-      lstm\_dropout & 0.3 \\
-      between\_dropout & 0.3 \\
-      gru\_layers & 1 \\
-      gru\_hidden\_size & 64 \\
-      gru\_bidirectional & true \\
-      \bottomrule
-    \end{tabular}
-    \label{tab:hybrid_hyperparameters}
-\end{table}
 
 Lastly, we propose HybridCTCModule (with hyperparameters in Table~\ref{tab:hybrid_hyperparameters}), which fuses the TCN and LSTM+GRU concepts:
 

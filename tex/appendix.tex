@@ -3,7 +3,62 @@
 
 \section{Appendix / supplemental material}
 
+\begin{table}
+    \caption{Hyperparameters for TCNCTCModule}
+    \label{tab:tcn_ctc}
+    \centering
+    \begin{tabular}{ll}
+      \toprule
+      \textbf{Hyperparameter} & \textbf{Value} \\
+      \midrule
+      num\_filters & [128, 128, 128, 256] \\
+      kernel\_size & 32 \\
+      dilation\_base & 3 \\
+      \bottomrule
+    \end{tabular}
+    \label{tab:tcn_hyperparameters}
+\end{table}
 
-Optionally include supplemental material (complete proofs, additional experiments and plots) in appendix.
-All such materials \textbf{SHOULD be included in the main submission.}
 
+\begin{table}
+    \caption{Hyperparameters for LSTMGRUCTCModule}
+    \label{tab:lstm_gru_ctc}
+    \centering
+    \begin{tabular}{ll}
+      \toprule
+      \textbf{Hyperparameter} & \textbf{Value} \\
+      \midrule
+      lstm\_layers & 2 \\
+      lstm\_hidden\_size & 192 \\
+      lstm\_dropout & 0.3 \\
+      between\_dropout & 0.3 \\
+      gru\_layers & 1 \\
+      gru\_hidden\_size & 64 \\
+      gru\_bidirectional & true \\
+      \bottomrule
+    \end{tabular}
+    \label{tab:lstm_gru_hyperparameters}
+\end{table}
+
+\begin{table}
+    \caption{Hyperparameters for HybridCTCModule}
+    \label{tab:hybrid_ctc}
+    \centering
+    \begin{tabular}{ll}
+      \toprule
+      \textbf{Hyperparameter} & \textbf{Value} \\
+      \midrule
+      num\_filters & [128, 128, 128, 256] \\
+      kernel\_size & 32 \\
+      dilation\_base & 3 \\
+      lstm\_layers & 2 \\
+      lstm\_hidden\_size & 192 \\
+      lstm\_dropout & 0.3 \\
+      between\_dropout & 0.3 \\
+      gru\_layers & 1 \\
+      gru\_hidden\_size & 64 \\
+      gru\_bidirectional & true \\
+      \bottomrule
+    \end{tabular}
+    \label{tab:hybrid_hyperparameters}
+\end{table}

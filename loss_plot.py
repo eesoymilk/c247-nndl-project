@@ -1,5 +1,4 @@
 import re
-from pprint import pprint
 from pathlib import Path
 from collections import defaultdict
 
@@ -14,6 +13,15 @@ FIGURES_DIR = SCRIPT_DIR / "tex" / "figures"
 FIGURES_DIR.mkdir(exist_ok=True, parents=True)
 
 
+def get_log_dir(parent_log_dir: Path):
+    log_dir = parent_log_dir / "submitit_logs"
+    for log_d in parent_log_dir.iterdir():
+        if not log_d.is_dir():
+            continue
+        return log_d
+    raise FileNotFoundError(f"No log directory found in {log_dir}")
+
+
 def get_log_file_from_log_dir(log_dir: Path):
     for log_file in log_dir.iterdir():
         if log_file.suffix == ".out":
@@ -23,8 +31,8 @@ def get_log_file_from_log_dir(log_dir: Path):
 
 def get_all_logs(
     result_log_dir: Path = RESULT_LOGS_DIR,
-) -> list[tuple[str, Path, Path]]:
-    log_dirs = []
+) -> list[tuple[str, Path]]:
+    logs = []
     for d in result_log_dir.iterdir():
         if not d.is_dir():
             continue
@@ -34,17 +42,10 @@ def get_all_logs(
 
         log_name = d.stem.split("-")[0]
 
-        log_dir = d / "submitit_logs"
-        for log_d in log_dir.iterdir():
-            if not log_d.is_dir():
-                continue
-            log_dir = log_d
-            break
-        else:
-            raise FileNotFoundError(f"No log directory found in {d}")
+        log_dir = get_log_dir(d)
         log_file = get_log_file_from_log_dir(log_dir)
-        log_dirs.append((log_name, log_dir, log_file))
-    return log_dirs
+        logs.append((log_name, log_file))
+    return logs
 
 
 def get_losses(log_file: Path) -> None:
@@ -93,10 +94,9 @@ def plot_losses(
 
 
 def main() -> None:
-    log_dirs = get_all_logs()
-    for log_name, log_dir, log_file in log_dirs:
+    logs = get_all_logs()
+    for log_name, log_file in logs:
         print(f"Log Name: {log_name}")
-        print(f"Log Dir: {log_dir}")
         print(f"Log File: {log_file}")
         losses = get_losses(log_file)
         plot_losses(log_name, losses, log_scale=False)

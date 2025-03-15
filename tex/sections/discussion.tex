@@ -1,9 +1,14 @@
 \section{Discussion}
 
 \subsubsection{Model Architecture}
-An important context for the results is that the data used was from a single user, so the data volume and diversity are limited. The validation and test loss of the hybrid and LSTM-GRU models are significantly lower than those of the other models, while the TCN model has the highest loss. This may suggest that the TCN model is poorly suited for this task. For sEMG, which may require capturing signals with long-term dependencies or strong individual differences, more convolutional layers or more sophisticated parameter adjustments may be required. The TCN model converges too quickly, which may indicate that it is overfitting the training data. On the other hand, the hybrid model and LSTM-GRU model are better at capturing the temporal dependencies in the data. However, because our dataset is limited to a single user, models like the hybrid model may not fully utilize their potential. Multi-user datasets could better exploit the advantages of these models, but they would also increase the challenge of generalization.
 
-Another observation is that the hybrid model took longer to converge than the baseline model. This may be due to the complexity of the hybrid model, and it also suggests that the hybrid model is more prone to overfitting.
+A critical context for our experimental results is the use of data from a single user, restricting both data volume and variability. Among the evaluated models, the baseline TDSConv architecture consistently achieved superior performance, demonstrating robust decoding capability for keystrokes from sEMG signals.
+
+The purely convolutional TCN model initially showed rapid convergence but quickly plateaued, exhibiting high validation and test losses. This behavior suggests the model’s limited ability to capture long-term dependencies essential in sEMG data, and its tendency toward overfitting given the limited dataset size.
+
+Conversely, the purely recurrent LSTM-GRU model exhibited slower yet continuous improvement in performance, highlighting its effectiveness in modeling temporal dependencies inherent in sEMG signals. The hybrid model (TCN+LSTM+GRU) similarly leveraged recurrent components to capture temporal relationships; however, the added complexity from convolutional layers prolonged convergence times and increased vulnerability to overfitting.
+
+Overall, these findings suggest that recurrent models are better suited for capturing temporal dynamics in sEMG signals, especially when dataset diversity and volume are constrained. Future research should consider multi-user datasets, longer training periods, and advanced regularization or data augmentation methods to fully exploit the potential of hybrid and recurrent architectures.
 
 \subsubsection{Preprocessing Techniques}
 The results of our experiments showed that the model using the 50 Hz notch filter achieved a validation CER that was 8.2\% lower than the baseline model at Epoch 50. This may indicate that removing power line interference is crucial for processing sEMG signals. After removing the 50 Hz interference, the model can focus more on the effective frequency components in the signal, thereby extracting more meaningful features and improving the final performance.

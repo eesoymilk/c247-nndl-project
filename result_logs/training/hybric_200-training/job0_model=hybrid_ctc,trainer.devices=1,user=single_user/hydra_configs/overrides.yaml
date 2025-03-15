@@ -1,5 +1,0 @@
-- user=single_user
-- model=hybrid_ctc
-- checkpoint=result_logs/hybric-training/epoch95_step23040.ckpt
-- trainer.accelerator=gpu
-- trainer.devices=1

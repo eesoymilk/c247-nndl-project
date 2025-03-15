@@ -1,0 +1,214 @@
+submitit INFO (2025-03-13 18:21:52,820) - Starting with JobEnvironment(job_id=25509, hostname=Zephyrus-G14, local_rank=0(1), node=0(1), global_rank=0(1))
+submitit INFO (2025-03-13 18:21:52,820) - Loading pickle: /home/eesoymilk/src/c247-nndl-project/logs/2025-03-13/18-21-52/submitit_logs/25509/25509_submitted.pkl
+[2025-03-13 18:21:55,456][__main__][INFO] - 
+Config:
+user: single_user
+dataset:
+  train:
+  - user: 89335547
+    session: 2021-06-03-1622765527-keystrokes-dca-study@1-0efbe614-9ae6-4131-9192-4398359b4f5f
+  - user: 89335547
+    session: 2021-06-02-1622681518-keystrokes-dca-study@1-0efbe614-9ae6-4131-9192-4398359b4f5f
+  - user: 89335547
+    session: 2021-06-04-1622863166-keystrokes-dca-study@1-0efbe614-9ae6-4131-9192-4398359b4f5f
+  - user: 89335547
+    session: 2021-07-22-1627003020-keystrokes-dca-study@1-0efbe614-9ae6-4131-9192-4398359b4f5f
+  - user: 89335547
+    session: 2021-07-21-1626916256-keystrokes-dca-study@1-0efbe614-9ae6-4131-9192-4398359b4f5f
+  - user: 89335547
+    session: 2021-07-22-1627004019-keystrokes-dca-study@1-0efbe614-9ae6-4131-9192-4398359b4f5f
+  - user: 89335547
+    session: 2021-06-05-1622885888-keystrokes-dca-study@1-0efbe614-9ae6-4131-9192-4398359b4f5f
+  - user: 89335547
+    session: 2021-06-02-1622679967-keystrokes-dca-study@1-0efbe614-9ae6-4131-9192-4398359b4f5f
+  - user: 89335547
+    session: 2021-06-03-1622764398-keystrokes-dca-study@1-0efbe614-9ae6-4131-9192-4398359b4f5f
+  - user: 89335547
+    session: 2021-07-21-1626917264-keystrokes-dca-study@1-0efbe614-9ae6-4131-9192-4398359b4f5f
+  - user: 89335547
+    session: 2021-06-05-1622889105-keystrokes-dca-study@1-0efbe614-9ae6-4131-9192-4398359b4f5f
+  - user: 89335547
+    session: 2021-06-03-1622766673-keystrokes-dca-study@1-0efbe614-9ae6-4131-9192-4398359b4f5f
+  - user: 89335547
+    session: 2021-06-04-1622861066-keystrokes-dca-study@1-0efbe614-9ae6-4131-9192-4398359b4f5f
+  - user: 89335547
+    session: 2021-07-22-1627001995-keystrokes-dca-study@1-0efbe614-9ae6-4131-9192-4398359b4f5f
+  - user: 89335547
+    session: 2021-06-05-1622884635-keystrokes-dca-study@1-0efbe614-9ae6-4131-9192-4398359b4f5f
+  - user: 89335547
+    session: 2021-07-21-1626915176-keystrokes-dca-study@1-0efbe614-9ae6-4131-9192-4398359b4f5f
+  val:
+  - user: 89335547
+    session: 2021-06-04-1622862148-keystrokes-dca-study@1-0efbe614-9ae6-4131-9192-4398359b4f5f
+  test:
+  - user: 89335547
+    session: 2021-06-02-1622682789-keystrokes-dca-study@1-0efbe614-9ae6-4131-9192-4398359b4f5f
+  root: ${hydra:runtime.cwd}/data
+to_tensor:
+  _target_: emg2qwerty.transforms.ToTensor
+  fields:
+  - emg_left
+  - emg_right
+band_rotation:
+  _target_: emg2qwerty.transforms.ForEach
+  transform:
+    _target_: emg2qwerty.transforms.RandomBandRotation
+    offsets:
+    - -1
+    - 0
+    - 1
+temporal_jitter:
+  _target_: emg2qwerty.transforms.TemporalAlignmentJitter
+  max_offset: 120
+logspec:
+  _target_: emg2qwerty.transforms.LogSpectrogram
+  n_fft: 64
+  hop_length: 16
+specaug:
+  _target_: emg2qwerty.transforms.SpecAugment
+  n_time_masks: 3
+  time_mask_param: 25
+  n_freq_masks: 2
+  freq_mask_param: 4
+bandpass:
+  _target_: emg2qwerty.transforms.BandpassFilter
+  lowcut: 20.0
+  highcut: 500.0
+notch:
+  _target_: emg2qwerty.transforms.NotchFilter
+  notch_freq: 50.0
+  Q: 10.0
+z_score:
+  _target_: emg2qwerty.transforms.ZScoreNormalize
+additive_noise:
+  _target_: emg2qwerty.transforms.AdaptiveGaussianNoise
+  noise_ratio: 0.05
+transforms:
+  train:
+  - ${to_tensor}
+  - ${band_rotation}
+  - ${temporal_jitter}
+  - ${logspec}
+  - ${specaug}
+  val:
+  - ${to_tensor}
+  - ${logspec}
+  test: ${transforms.val}
+module:
+  _target_: emg2qwerty.lightning.HybridCTCModule
+  num_filters:
+  - 128
+  - 128
+  - 128
+  - 256
+  kernel_size: 32
+  dilation_base: 3
+  lstm_layers: 2
+  lstm_hidden_size: 192
+  lstm_dropout: 0.3
+  between_dropout: 0.3
+  gru_layers: 1
+  gru_hidden_size: 64
+  gru_bidirectional: true
+datamodule:
+  _target_: emg2qwerty.lightning.WindowedEMGDataModule
+  window_length: 8000
+  padding:
+  - 1800
+  - 200
+optimizer:
+  _target_: torch.optim.Adam
+  lr: 0.001
+lr_scheduler:
+  scheduler:
+    _target_: pl_bolts.optimizers.lr_scheduler.LinearWarmupCosineAnnealingLR
+    warmup_epochs: 10
+    max_epochs: ${trainer.max_epochs}
+    warmup_start_lr: 1.0e-08
+    eta_min: 1.0e-06
+  interval: epoch
+decoder:
+  _target_: emg2qwerty.decoder.CTCGreedyDecoder
+seed: 1501
+batch_size: 16
+num_workers: 2
+train: false
+checkpoint: result_logs/hybric_200-training/epoch99_step24000.ckpt
+monitor_metric: val/CER
+monitor_mode: min
+trainer:
+  accelerator: gpu
+  devices: 1
+  num_nodes: 1
+  max_epochs: 100
+  default_root_dir: ${hydra:runtime.output_dir}
+callbacks:
+- _target_: pytorch_lightning.callbacks.LearningRateMonitor
+- _target_: pytorch_lightning.callbacks.ModelCheckpoint
+  dirpath: ${hydra:runtime.output_dir}/checkpoints
+  monitor: ${monitor_metric}
+  mode: ${monitor_mode}
+  save_last: true
+  verbose: true
+
+[2025-03-13 18:21:55,458][__main__][INFO] - Instantiating LightningModule {'_target_': 'emg2qwerty.lightning.HybridCTCModule', 'num_filters': [128, 128, 128, 256], 'kernel_size': 32, 'dilation_base': 3, 'lstm_layers': 2, 'lstm_hidden_size': 192, 'lstm_dropout': 0.3, 'between_dropout': 0.3, 'gru_layers': 1, 'gru_hidden_size': 64, 'gru_bidirectional': True}
+[2025-03-13 18:21:55,525][__main__][INFO] - Loading module from checkpoint result_logs/hybric_200-training/epoch99_step24000.ckpt
+[2025-03-13 18:21:55,632][__main__][INFO] - Instantiating LightningDataModule {'_target_': 'emg2qwerty.lightning.WindowedEMGDataModule', 'window_length': 8000, 'padding': [1800, 200]}
+
+Validation: 0it [00:00, ?it/s]
+Validation:   0%|          | 0/14 [00:00<?, ?it/s]
+Validation DataLoader 0:   0%|          | 0/14 [00:00<?, ?it/s]
+Validation DataLoader 0:   7%|▋         | 1/14 [00:00<00:04,  3.04it/s]
+Validation DataLoader 0:  14%|█▍        | 2/14 [00:00<00:02,  4.53it/s]
+Validation DataLoader 0:  21%|██▏       | 3/14 [00:00<00:02,  5.44it/s]
+Validation DataLoader 0:  29%|██▊       | 4/14 [00:00<00:01,  6.12it/s]
+Validation DataLoader 0:  36%|███▌      | 5/14 [00:00<00:01,  6.60it/s]
+Validation DataLoader 0:  43%|████▎     | 6/14 [00:00<00:01,  6.96it/s]
+Validation DataLoader 0:  50%|█████     | 7/14 [00:00<00:00,  7.25it/s]
+Validation DataLoader 0:  57%|█████▋    | 8/14 [00:01<00:00,  7.48it/s]
+Validation DataLoader 0:  64%|██████▍   | 9/14 [00:01<00:00,  7.66it/s]
+Validation DataLoader 0:  71%|███████▏  | 10/14 [00:01<00:00,  7.82it/s]
+Validation DataLoader 0:  79%|███████▊  | 11/14 [00:01<00:00,  7.97it/s]
+Validation DataLoader 0:  86%|████████▌ | 12/14 [00:01<00:00,  8.11it/s]
+Validation DataLoader 0:  93%|█████████▎| 13/14 [00:01<00:00,  8.21it/s]
+Validation DataLoader 0: 100%|██████████| 14/14 [00:01<00:00,  8.60it/s]
+Validation DataLoader 0: 100%|██████████| 14/14 [00:01<00:00,  8.57it/s]
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+     Validate metric           DataLoader 0
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+         val/CER            20.159503936767578
+         val/DER            1.5507310628890991
+         val/IER             4.009747505187988
+         val/SER             14.59902572631836
+        val/loss            0.6559306979179382
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Testing: 0it [00:00, ?it/s]
+Testing:   0%|          | 0/1 [00:00<?, ?it/s]
+Testing DataLoader 0:   0%|          | 0/1 [00:00<?, ?it/s]
+Testing DataLoader 0: 100%|██████████| 1/1 [00:07<00:00,  7.18s/it]
+Testing DataLoader 0: 100%|██████████| 1/1 [00:07<00:00,  7.19s/it]
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+       Test metric             DataLoader 0
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+        test/CER            21.655500411987305
+        test/DER            1.7073698043823242
+        test/IER            3.5444133281707764
+        test/SER            16.403717041015625
+        test/loss           0.6709825396537781
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+{'val_metrics': [{'val/loss': 0.6559306979179382,
+                  'val/CER': 20.159503936767578,
+                  'val/IER': 4.009747505187988,
+                  'val/DER': 1.5507310628890991,
+                  'val/SER': 14.59902572631836}],
+ 'test_metrics': [{'test/loss': 0.6709825396537781,
+                   'test/CER': 21.655500411987305,
+                   'test/IER': 3.5444133281707764,
+                   'test/DER': 1.7073698043823242,
+                   'test/SER': 16.403717041015625}],
+ 'best_checkpoint': ''}
+submitit INFO (2025-03-13 18:22:09,010) - Job completed successfully
+[2025-03-13 18:22:09,010][submitit][INFO] - Job completed successfully
+submitit INFO (2025-03-13 18:22:09,015) - Exiting after successful completion
+[2025-03-13 18:22:09,015][submitit][INFO] - Exiting after successful completion

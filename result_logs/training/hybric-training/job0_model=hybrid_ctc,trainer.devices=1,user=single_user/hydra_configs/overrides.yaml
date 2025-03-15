@@ -1,4 +1,0 @@
-- user=single_user
-- model=hybrid_ctc
-- trainer.accelerator=gpu
-- trainer.devices=1

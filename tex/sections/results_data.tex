@@ -17,12 +17,13 @@ Because of time constraints, we did not test other values.
 
 \begin{figure}
     \centering
-    % \includegraphics[width=0.8\textwidth]{figures/Val_cer.png}
+    \includegraphics[width=0.8\textwidth]{figures/data_train.png}
     \caption{Comparison of the CER of the baseline model and the models with preprocessing techniques}
+    \label{fig:data_train}
 \end{figure}
   
 
-As shown in , we found that the validation CER of model with the notch filter surpassed the baseline model by 8.2\% at the end of Epoch 50.
+As shown in \ref{fig:data_train}, we found that the validation CER of model with the notch filter surpassed the baseline model by 8.2\% at the end of Epoch 50.
 The model with adaptive Gaussian noise and the model with z-score normalization also achieved a CER of 22.13 and 22.37 respectively, 
 which is quite close to the baseline model's CER of 20.98.
 However, the model with the bandpass filters both performed poorly, while they had a very high CER at the beginning of training.

@@ -3,6 +3,7 @@ import re
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 def convert_and_plot(log_file_folder):
     for root, _, files in os.walk(log_file_folder):
         for file in files:
@@ -38,7 +39,7 @@ def convert_and_plot(log_file_folder):
                         log_val_cers = np.log1p(val_cers)
 
                         plt.figure()
-                        plt.plot(epochs, log_val_cers, marker='o', linestyle='-')
+                        plt.plot(epochs, log_val_cers, marker="o", linestyle="-")
                         plt.xlabel("Epoch")
                         plt.ylabel("Log(Validation CER)")
                         plt.title(f"Validation CER for {file} (Log Scale)")
@@ -53,6 +54,7 @@ def convert_and_plot(log_file_folder):
 
                 except Exception as e:
                     print(f"Failed to process {err_path}: {e}")
+
 
 log_file_folder = "result_logs"
 convert_and_plot(log_file_folder)

@@ -10,7 +10,7 @@ For tests involving filters, the temporal data was successively passed through a
 The sampling frequency for both filters was set to 2000 Hz, which is the same as the sampling frequency of the original data,
 so the filter design was based on the Nyquist frequency of 1000 Hz.
 Both filters were designed using forward-backward filtering to avoid phase distortion.
-We set the order of the bandpass filter to 4 and the cutoff frequencies to 0.5 Hz and 500 Hz, respectively.
+We set the order of the bandpass filter to 4 and the cutoff frequencies to 20 Hz and 150 Hz / 500 Hz, respectively.
 Then, we applied another 2-order notch filter.
 The Q factor of the notch filter was set to 30 and the middle frequency was set to 50 Hz, 
 which are common values in this context. This configuration ensures a narrow bandwidth to effectively remove the power line interference.
@@ -26,7 +26,7 @@ while also eliminating power line interference at 50 Hz.
       \cmidrule(r){1-2}
       Type of Filter     & Frequency Range (Hz)     & Reference \\
       \midrule
-      $4^{th}$ Butterworth bandpass filter & 20 - 500 Hz  &  ~[1], ~[3]    \\
+      $4^{th}$ Butterworth bandpass filter & 20 - 150/500 Hz  &  ~[1], ~[3]    \\
       $2^{nd}$ Butterworth notch filter    & 50 Hz        &  ~[1], ~[2]    \\
       \bottomrule
     \end{tabular}

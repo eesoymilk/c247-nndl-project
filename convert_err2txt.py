@@ -20,5 +20,5 @@ def generate_txt_files(log_file_folder):
                 except Exception as e:
                     print(f"Failed to process {err_path}: {e}")
 
-log_file_folder = "result_logs/training"
+log_file_folder = "result_logs/data"
 generate_txt_files(log_file_folder)

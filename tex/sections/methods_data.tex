@@ -4,6 +4,8 @@ We primarily explored three forms of preprocessing: combination filtering (bandp
 adaptive Gaussian noise, and z-score normalization.
 They were tested separately on the baseline model to evaluate their effects on model performance.
 
+\subsubsection{Combination Filtering}
+
 For tests involving filters, the temporal data was successively passed through a Butterworth bandpass filter and a notch filter (Table~\ref{filters}).
 The sampling frequency for both filters was set to 2000 Hz, which is the same as the sampling frequency of the original data,
 so the filter design was based on the Nyquist frequency of 1000 Hz.
@@ -30,14 +32,19 @@ while also eliminating power line interference at 50 Hz.
     \end{tabular}
   \end{table}
   
+\subsubsection{Adaptive Gaussian Noise}
 
 For the adaptive Gaussian noise, we added noise to the data based on the standard deviation of the original data.
 Specifically, we set the noise ratio to 0.05, which is a relatively small value, to ensure that the noise does not overwhelm the original signal.
 For a given sample, we generated Gaussian noise with a mean of 0 and a standard deviation of 0.05 times the standard deviation of the original data
 along the time axis to add to the diversity of the data.
 
+\subsubsection{Z-score Normalization}
+
 For normalization, we applied z-score normalization along the time axis to 
 standardize the data by subtracting the mean and scaling it to unit variance.
+
+\subsubsection{Preprocessing Pipeline}
 
 These steps were arranged in the order of filtering, noise addition, and normalization.
 This is because general noise and artifacts do not carry useful information, so they are removed first.

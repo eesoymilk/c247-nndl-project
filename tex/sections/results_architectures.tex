@@ -2,20 +2,26 @@
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.8\textwidth]{figures/all_losses.png}
-    \caption{Training losses for all architectures.}
-\end{figure}
-
-\begin{figure}
-    \centering
-    \includegraphics[width=0.8\textwidth]{figures/Val_cer.png}
-    \caption{Validation CER for all architectures.}
-\end{figure}
-
-\begin{figure}
-    \centering
-    \includegraphics[width=0.8\textwidth]{figures/test.png}
-    \caption{Test CER for all architectures.}
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/all_losses.png}
+        \caption{Training losses for all architectures.}
+        \label{fig:y equals x}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/Val_cer.png}
+        \caption{Validation CER for all architectures.}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/test.png}
+        \caption{Test CER for all architectures.}
+    \end{subfigure}
+    \caption{Model performance comparison.}
+    \label{fig:result}
 \end{figure}
 
 All four neural architectures were trained for a total of $200$ epochs. Due to computational constraints, we partitioned the training into two consecutive phases of $100$ epochs each. We checkpointed each model after the initial $100$ epochs, resuming the second phase of training from these checkpoints. To differentiate clearly between these two training stages, we appended the suffix \texttt{\_200} to denote metrics collected during the second $100$ epochs.

@@ -1,6 +1,0 @@
-- user=single_user
-- model=tds_conv_ctc
-- decoder=ctc_greedy
-- transforms=custom
-- trainer.accelerator=gpu
-- trainer.devices=1
